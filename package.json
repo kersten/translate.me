@@ -1,0 +1,16 @@
+{
+    "name"        : "requirejs-i18n-mongodb",
+    "version"     : "0.1.0",
+
+    "author"      : "Kersten Burkhardt <kerstenk@gmail.com>",
+    "description" : "",
+
+    "dependencies": {
+        "mongoose": "*"
+    },
+
+    "engines": {
+        "node": "0.8.x",
+        "npm": "1.1.x"
+    }
+}
