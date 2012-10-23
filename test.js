@@ -10,7 +10,7 @@ app.get('/', function(req, res){
 });
 
 parser.parse({
-    templatePath: __dirname + "/../../Developing/cardqr.de/Frontend/templates"
+    templatePath: __dirname + "/../cardqr.de/Frontend/templates"
 });
 
 app.listen(3000);
