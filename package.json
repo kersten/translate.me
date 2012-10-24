@@ -6,6 +6,7 @@
     "description" : "UI for managing i18n strings and publish them for requirejs i18n plugin.",
 
     "dependencies": {
+        "hogan.js": "*",
         "mongoose": "*",
         "dive": "*"
     },
