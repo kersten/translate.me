@@ -7,7 +7,7 @@
 
     "dependencies": {
         "mongoose": "*",
-        "walk": "*"
+        "dive": "*"
     },
 
     "engines": {

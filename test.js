@@ -3,14 +3,12 @@ var middleware = require("./lib/middleware"),
     app = express(),
     parser = require("./lib/parser");
 
-app.use(middleware());
+app.use(middleware({
+    templatePath: __dirname + "/../../Developing/cardqr.de/Frontend/templates"
+}));
 
 app.get('/', function(req, res){
     res.send('Hello World');
-});
-
-parser.parse({
-    templatePath: __dirname + "/../cardqr.de/Frontend/templates"
 });
 
 app.listen(3000);
