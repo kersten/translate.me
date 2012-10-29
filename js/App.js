@@ -195,14 +195,14 @@ $(function () {
 
         load: function (path, locale) {
             this.path = path;
-            this.lang = locale;
+            this.locale = locale;
 
             this.collection.fetch({data: {path: path}});
         },
 
         switchLang: function (lang) {
-            this.lang = lang;
-            this.collection.fetch({data: {path: this.path, locale: this.lang}});
+            this.locale = lang;
+            this.collection.fetch({data: {path: this.path, locale: this.locale}});
         },
 
         save: function () {
@@ -210,7 +210,7 @@ $(function () {
 
             this.collection.each(function (model) {
                 //if (model.hasChanged("value")) {
-                    model.save({path: self.collection.path, locale: this.lang});
+                    model.save({path: self.collection.path, locale: self.locale});
                 //}
             });
         },
