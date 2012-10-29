@@ -1,3 +1,5 @@
+Backbone.Model.prototype.idAttribute = "_id";
+
 $(function () {
     var i18nModel = Backbone.Model.extend({
 
@@ -12,8 +14,8 @@ $(function () {
 
             this.path = response.path;
 
-            _.each(response.strings, function (val, key) {
-                res.push({key: key, value: val})
+            _.each(response.strings, function (string) {
+                res.push({key: string.key, value: string.value, _id: string._id});
             });
 
             return res;
@@ -39,6 +41,7 @@ $(function () {
         initialize: function () {
             this.table = new TableView();
             this.select = new PathsView();
+            this.language = new LanguageView();
 
             this.render();
         },
@@ -51,10 +54,43 @@ $(function () {
 
         render: function () {
             $("#selectPath").append(this.select.render().el);
+            $("#selectLang").append(this.language.render().el);
             $("#table").append(this.table.render().el);
 
             $("#table").append($("<div class=\"form-actions\"><button id=\"saveStrings\" type=\"submit\" class=\"btn btn-primary\">Save changes</button><button type=\"button\" class=\"btn\">Cancel</button></div>"));
 
+            return this;
+        }
+    });
+
+    var LanguageView = Backbone.View.extend({
+        tagName: "select",
+
+        events: {
+            "change": "changed"
+        },
+
+        initialize: function () {
+            var self = this;
+
+            $.get("/i18nAdmin/cclist", function (list) {
+                _.each(list, function (country, code) {
+                    var entry = $("<option></option>").html(country).attr("value", code);
+
+                    if (code == "en") {
+                        entry.attr("selected", "selected");
+                    }
+
+                    self.$el.append(entry);
+                });
+            });
+        },
+
+        changed: function (e) {
+            App.table.switchLang($(e.currentTarget).val());
+        },
+
+        render: function () {
             return this;
         }
     });
@@ -75,7 +111,7 @@ $(function () {
             this.collection.on("reset", function () {
                 self.collection.each(function (model, i) {
                     if (i == 0) {
-                        App.table.load(model.get("path"));
+                        App.table.load(model.get("path"), model.get("locale"));
                     }
 
                     self.$el.append($("<option></option>").html(model.get("path")).attr("value", model.get("path")));
@@ -85,6 +121,42 @@ $(function () {
 
         changed: function (e) {
             App.table.load($(e.currentTarget).val());
+        },
+
+        render: function () {
+            return this;
+        }
+    });
+
+    var RowView = Backbone.View.extend({
+        tagName: "tr",
+
+        events: {
+            "keyup input": "update"
+        },
+
+        initialize: function () {
+            $(this.el).append($("<td></td>").html(this.model.get("key")));
+            $(this.el).append($("<td></td>").html($("<input>").attr({
+                id: this.model.get("_id"),
+                placeholder: "missing",
+                type: "text"
+            }).val(this.model.get("value"))));
+
+            if (this.model.get("value") === undefined || this.model.get("value") == "") {
+                $(this.el).addClass("warning");
+            }
+        },
+
+        update: function (e) {
+            this.model.set({
+                value: $(e.currentTarget).val()
+            });
+
+            if (!$(this.el).hasClass("success")) {
+                $(this.el).removeClass("warning");
+                $(this.el).addClass("success");
+            }
         },
 
         render: function () {
@@ -112,30 +184,34 @@ $(function () {
                 self.$el.append($("<thead></thead>").append(row));
 
                 self.collection.each(function (model) {
-                    var row = $("<tr></tr>");
+                    var row = new RowView({
+                        model: model
+                    });
 
-                    row.append($("<td></td>").html(model.get("key")));
-                    row.append($("<td></td>").html($("<input>").attr({placeholder: "missing", type: "text"}).val(model.get("value"))));
-
-                    if (model.get("value") == "") {
-                        row.addClass("warning");
-                    }
-
-                    self.$el.append(row);
+                    self.$el.append(row.el);
                 });
             });
         },
 
-        load: function (path) {
+        load: function (path, locale) {
             this.path = path;
+            this.lang = locale;
+
             this.collection.fetch({data: {path: path}});
+        },
+
+        switchLang: function (lang) {
+            this.lang = lang;
+            this.collection.fetch({data: {path: this.path, locale: this.lang}});
         },
 
         save: function () {
             var self = this;
 
             this.collection.each(function (model) {
-                model.save({path: self.collection.path});
+                //if (model.hasChanged("value")) {
+                    model.save({path: self.collection.path, locale: this.lang});
+                //}
             });
         },
 
