@@ -202,7 +202,13 @@ $(function () {
 
         switchLang: function (lang) {
             this.locale = lang;
-            this.collection.fetch({data: {path: this.path, locale: this.locale}});
+
+            this.collection.fetch({
+                data: {
+                    path: this.path,
+                    locale: this.locale
+                }
+            });
         },
 
         save: function () {

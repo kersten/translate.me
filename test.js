@@ -4,7 +4,7 @@ var middleware = require("./lib/middleware"),
     parser = require("./lib/parser");
 
 app.use(middleware({
-    templatePath: __dirname + "/..//cardqr.de/Frontend/templates",
+    templatePath: __dirname + "/../../Documents/cardqr.de/Frontend/templates",
     enableUI: true
 }));
 
