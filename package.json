@@ -10,7 +10,8 @@
         "hogan.js": "*",
         "mongoose": "*",
         "dive": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "junify": "*"
     },
 
     "engines": {

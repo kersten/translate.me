@@ -191,6 +191,10 @@ $(function () {
                     self.$el.append(row.el);
                 });
             });
+
+            this.collection.on("update", function () {
+                console.log(arguments);
+            });
         },
 
         load: function (path, locale) {
@@ -202,6 +206,7 @@ $(function () {
 
         switchLang: function (lang) {
             this.locale = lang;
+            this.setPath = this.path.replace("/nls/", "/nls/" + lang + "/");
 
             this.collection.fetch({
                 data: {
@@ -215,8 +220,9 @@ $(function () {
             var self = this;
 
             this.collection.each(function (model) {
+                console.log({path: this.setPath, locale: self.locale});
                 //if (model.hasChanged("value")) {
-                    model.save({path: self.collection.path, locale: self.locale});
+                    model.save({path: self.setPath, locale: self.locale});
                 //}
             });
         },
