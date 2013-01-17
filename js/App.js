@@ -111,16 +111,16 @@ $(function () {
             this.collection.on("reset", function () {
                 self.collection.each(function (model, i) {
                     if (i == 0) {
-                        App.table.load(model.get("path"), model.get("locale"));
+                        App.table.load(model.get("_id"), model.get("locale"));
                     }
 
-                    self.$el.append($("<option></option>").html(model.get("path")).attr("value", model.get("path")));
+                    self.$el.append($("<option></option>").attr("data-id", model.get("_id")).html(model.get("path")).attr("value", model.get("path")));
                 });
             });
         },
 
         changed: function (e) {
-            App.table.load($(e.currentTarget).val());
+            Backbone.history.navigate("/path/" + $(":selected", this.el).data("id"), true);
         },
 
         render: function () {
@@ -192,25 +192,26 @@ $(function () {
                 });
             });
 
-            this.collection.on("update", function () {
-                console.log(arguments);
-            });
+            this.collection.on("update");
         },
 
         load: function (path, locale) {
             this.path = path;
-            this.locale = locale;
 
-            this.collection.fetch({data: {path: path}});
+            if (locale !== undefined) {
+                this.locale = locale;
+            }
+
+            this.collection.fetch({data: {path: App.select.collection.get(path).get("path"), locale: this.locale}});
         },
 
         switchLang: function (lang) {
             this.locale = lang;
-            this.setPath = this.path.replace("/nls/", "/nls/" + lang + "/");
+            this.setPath = App.select.collection.get(this.path).get("path").replace("/nls/", "/nls/" + lang + "/");
 
             this.collection.fetch({
                 data: {
-                    path: this.path,
+                    path: App.select.collection.get(this.path).get("path"),
                     locale: this.locale
                 }
             });
@@ -220,10 +221,7 @@ $(function () {
             var self = this;
 
             this.collection.each(function (model) {
-                console.log({path: this.setPath, locale: self.locale});
-                //if (model.hasChanged("value")) {
-                    model.save({path: self.setPath, locale: self.locale});
-                //}
+                model.save({path: self.setPath, locale: self.locale});
             });
         },
 
@@ -232,5 +230,29 @@ $(function () {
         }
     });
 
+    var i18nRouter = Backbone.Router.extend({
+        routes: {
+            "": "startRoute",
+            "path/:id(/:locale)": "pathRoute",
+            "about": "startRoute"
+        },
+
+        startRoute: function () {
+            console.log("RAVE");
+        },
+
+        pathRoute: function (path, locale) {
+            App.table.switchLang(locale);
+            App.table.load(path, locale);
+        }
+    });
+
     var App = new BodyView();
+    var router = new i18nRouter();
+
+    Backbone.history.start({
+        pushState: true,
+        silent: false,
+        root: "/i18nAdmin/"
+    });
 });

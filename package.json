@@ -1,21 +1,21 @@
 {
-    "name"        : "requirejs-i18n-mongodb",
-    "version"     : "0.1.0",
+    "name"   : "requirejs-i18n-mongodb",
+    "version": "0.1.0",
 
-    "author"      : "Kersten Burkhardt <kerstenk@gmail.com>",
-    "description" : "UI for managing i18n strings and publish them for requirejs i18n plugin.",
+    "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
+    "description": "UI for managing i18n strings and publish them for requirejs i18n plugin.",
 
     "dependencies": {
-        "async": "*",
-        "hogan.js": "*",
-        "mongoose": "*",
-        "dive": "*",
+        "async"     : "*",
+        "hogan.js"  : "*",
+        "mongoose"  : "*",
+        "dive"      : "*",
         "underscore": "*",
-        "junify": "*"
+        "junify"    : "*"
     },
 
     "engines": {
         "node": "0.8.x",
-        "npm": "1.1.x"
+        "npm" : "1.1.x"
     }
 }
