@@ -31,6 +31,11 @@ $(function () {
         url: "/i18nAdmin/paths/"
     });
 
+    var i18nLanguageCollection = Backbone.Collection.extend({
+        model: Backbone.Model.extend({}),
+        url: "/i18nAdmin/cclist/"
+    });
+
     var BodyView = Backbone.View.extend({
         el: '#content',
 
@@ -65,6 +70,7 @@ $(function () {
 
     var LanguageView = Backbone.View.extend({
         tagName: "select",
+        collection: new i18nLanguageCollection,
 
         events: {
             "change": "changed"
@@ -73,20 +79,19 @@ $(function () {
         initialize: function () {
             var self = this;
 
-            $.get("/i18nAdmin/cclist", function (list) {
-                _.each(list, function (country, code) {
-                    var entry = $("<option></option>").html(country).attr("value", code);
+            this.collection.fetch();
 
-                    if (code == "en") {
-                        entry.attr("selected", "selected");
-                    }
-
+            this.collection.on("reset", function () {
+                self.collection.each(function (model, i) {
+                    var entry = $("<option></option>").html(model.get("country")).attr("value", model.get("code"));
                     self.$el.append(entry);
                 });
             });
         },
 
         changed: function (e) {
+            console.log("change");
+
             App.table.switchLang($(e.currentTarget).val());
         },
 
@@ -110,17 +115,13 @@ $(function () {
 
             this.collection.on("reset", function () {
                 self.collection.each(function (model, i) {
-                    if (i == 0) {
-                        App.table.load(model.get("_id"), model.get("locale"));
-                    }
-
-                    self.$el.append($("<option></option>").attr("data-id", model.get("_id")).html(model.get("path")).attr("value", model.get("path")));
+                    self.$el.append($("<option></option>").attr("value", model.get("_id")).html(model.get("path").replace("/nls/", "")));
                 });
             });
         },
 
-        changed: function (e) {
-            Backbone.history.navigate("/path/" + $(":selected", this.el).data("id"), true);
+        changed: function () {
+            Backbone.history.navigate("/path/" + $(":selected", this.el).val() + "/" + App.table.locale, true);
         },
 
         render: function () {
@@ -196,18 +197,37 @@ $(function () {
         },
 
         load: function (path, locale) {
+            var self = this;
+
             this.path = path;
 
             if (locale !== undefined) {
                 this.locale = locale;
+            } else {
+                locale.en;
             }
 
-            this.collection.fetch({data: {path: App.select.collection.get(path).get("path"), locale: this.locale}});
+            this.collection.fetch({
+                data: {
+                    path: App.select.collection.get(path).get("path"),
+                    locale: this.locale
+                }, success: function () {
+                    $("select", "#selectPath").val(self.path);
+                    $("select", "#selectLang").val(self.locale);
+
+                    Backbone.history.navigate("/path/" + $(":selected", "#selectPath").val() + "/" + self.locale, false);
+                }
+            });
         },
 
         switchLang: function (lang) {
+            var self = this;
+
             this.locale = lang;
+
             this.setPath = App.select.collection.get(this.path).get("path").replace("/nls/", "/nls/" + lang + "/");
+
+            Backbone.history.navigate("/path/" + $(":selected", "#selectPath").val() + "/" + App.table.locale, false);
 
             this.collection.fetch({
                 data: {
@@ -233,26 +253,36 @@ $(function () {
     var i18nRouter = Backbone.Router.extend({
         routes: {
             "": "startRoute",
-            "path/:id(/:locale)": "pathRoute",
-            "about": "startRoute"
+            "path/:id(/:locale)": "pathRoute"
+        },
+
+        startAfter: function(collections) {
+            // Start history when required collections are loaded
+            var start = _.after(collections.length, _.once(function(){
+                Backbone.history.start({
+                    pushState: true,
+                    silent: false,
+                    root: "/i18nAdmin/"
+                });
+            }));
+
+            _.each(collections, function(collection) {
+                collection.bind('reset', start, Backbone.history)
+            });
         },
 
         startRoute: function () {
-            console.log("RAVE");
+
         },
 
         pathRoute: function (path, locale) {
-            App.table.switchLang(locale);
             App.table.load(path, locale);
+            App.table.switchLang(locale);
         }
     });
 
     var App = new BodyView();
     var router = new i18nRouter();
 
-    Backbone.history.start({
-        pushState: true,
-        silent: false,
-        root: "/i18nAdmin/"
-    });
+    router.startAfter([App.select.collection, App.language.collection]);
 });

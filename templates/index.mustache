@@ -26,7 +26,7 @@
     <script src="/i18nAdmin/js/App.js"></script>
 </head>
 <body>
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -41,6 +41,10 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
+
+                <form class="navbar-search pull-right">
+                    <input type="text" class="search-query" placeholder="Search for strings">
+                </form>
             </div><!--/.nav-collapse -->
         </div>
     </div>
@@ -48,8 +52,8 @@
 
 <div class="container" id="content">
 
-    <h1>Bootstrap starter template</h1>
-    <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+    <h1>Translate Strings</h1>
+    <p>Use this small UI to translate your App into the selected language.</p>
 
     <div class="row">
         <div class="span6" id="selectPath"></div>
