@@ -1,131 +1,109 @@
 Backbone.Model.prototype.idAttribute = "_id";
 
 $(function () {
-    var i18nModel = Backbone.Model.extend({
-
-    });
-
-    var i18nCollection = Backbone.Collection.extend({
-        model: i18nModel,
-        url: "/i18nAdmin/strings/",
-
-        parse: function(response) {
-            var res = [];
-
-            this.path = response.path;
-
-            _.each(response.strings, function (string) {
-                res.push({key: string.key, value: string.value, _id: string._id});
-            });
-
-            return res;
-        }
-    });
-
-    var i18nPathModel = Backbone.Model.extend({
-
-    });
-
-    var i18nPathCollection = Backbone.Collection.extend({
-        model: i18nPathModel,
-        url: "/i18nAdmin/paths/"
-    });
-
-    var i18nLanguageCollection = Backbone.Collection.extend({
-        model: Backbone.Model.extend({}),
-        url: "/i18nAdmin/cclist/"
-    });
-
     var BodyView = Backbone.View.extend({
         el: '#content',
 
-        events: {
-            "click button": "btnClicked"
-        },
-
         initialize: function () {
             this.table = new TableView();
+
+            this.viewConfig = new Backbone.Model();
+            this.listenTo(this.viewConfig, "change", function(model) {
+                if(typeof model.get("path") === "string" && model.get("language")) {
+                    this.table.collection.fetch({
+                        data: {
+                            path: model.get("path"),
+                            locale: model.get("language")
+                        }
+                    });
+                }
+            });
             this.select = new PathsView();
+            this.listenTo(this.select, "path:changed", function(path) {
+                this.viewConfig.set("path", path);
+            });
             this.language = new LanguageView();
-
-            this.render();
-        },
-
-        btnClicked: function (e) {
-            if ($(e.currentTarget).attr("id") == "saveStrings") {
-                this.table.save();
-            }
+            this.listenTo(this.language, "language:changed", function(countryCode) {
+                this.viewConfig.set("language", countryCode);
+            });
         },
 
         render: function () {
             $("#selectPath").append(this.select.render().el);
             $("#selectLang").append(this.language.render().el);
             $("#table").append(this.table.render().el);
-
-            $("#table").append($("<div class=\"form-actions\"><button id=\"saveStrings\" type=\"submit\" class=\"btn btn-primary\">Save changes</button><button type=\"button\" class=\"btn\">Cancel</button></div>"));
-
             return this;
         }
     });
 
+    var i18nLanguageCollection = Backbone.Collection.extend({
+        url: "/i18nAdmin/cclist/"
+    });
     var LanguageView = Backbone.View.extend({
         tagName: "select",
         collection: new i18nLanguageCollection,
 
         events: {
-            "change": "changed"
+            "change": "handleLanguageChanged"
         },
 
         initialize: function () {
             var self = this;
 
             this.collection.fetch();
-
             this.collection.on("reset", function () {
-                self.collection.each(function (model, i) {
-                    var entry = $("<option></option>").html(model.get("country")).attr("value", model.get("code"));
-                    self.$el.append(entry);
+                self.collection.each(function (model) {
+                    var $option = $("<option></option>");
+                    $option.html(model.get("country"));
+                    $option.attr("value", model.get("code"));
+                    self.$el.append($option);
                 });
+                self.fireLanguageChanged(self.collection.first().get("code"));
             });
         },
 
-        changed: function (e) {
-            console.log("change");
-
-            App.table.switchLang($(e.currentTarget).val());
+        handleLanguageChanged: function(event) {
+            this.fireLanguageChanged($(event.target).find(":selected").attr("value"));
         },
 
-        render: function () {
-            return this;
+        fireLanguageChanged: function(countryCode) {
+            this.trigger("language:changed", countryCode);
         }
     });
 
+    var i18nPathCollection = Backbone.Collection.extend({
+        url: "/i18nAdmin/paths/"
+    });
     var PathsView = Backbone.View.extend({
         tagName: "select",
         collection: new i18nPathCollection,
 
         events: {
-            "change": "changed"
+            "change": "handlePathChanged"
         },
 
         initialize: function () {
             var self = this;
 
             this.collection.fetch();
-
             this.collection.on("reset", function () {
-                self.collection.each(function (model, i) {
-                    self.$el.append($("<option></option>").attr("value", model.get("_id")).html(model.get("path").replace("/nls/", "")));
+                self.collection.each(function (model) {
+                    var path = model.get("path"),
+                        $option = $("<option></option>");
+                    $option.attr("value", path);
+                    $option.html(path.length > 0 ? path : "Global");
+                    self.$el.append($option);
                 });
+                self.firePathChanged(self.collection.first().get("path"));
             });
         },
 
-        changed: function () {
-            Backbone.history.navigate("/path/" + $(":selected", this.el).val() + "/" + App.table.locale, true);
+        handlePathChanged: function(event) {
+            this.firePathChanged($(event.target).find(":selected").attr("value"));
         },
 
-        render: function () {
-            return this;
+        firePathChanged: function(path) {
+            this.trigger("path:changed", path);
         }
     });
 
@@ -133,54 +111,79 @@ $(function () {
         tagName: "tr",
 
         events: {
-            "keyup input": "update"
+            "change input": "update"
         },
 
         initialize: function () {
-            $(this.el).append($("<td></td>").html(this.model.get("key")));
+            $(this.el).append($("<td></td>").css({"vertical-align": "middle"}).html(this.model.get("key")));
             $(this.el).append($("<td></td>").html($("<input>").attr({
-                id: this.model.get("_id"),
-                placeholder: "missing",
+                id: this.model.get("id"),
+                placeholder: "Missing",
                 type: "text"
-            }).val(this.model.get("value"))));
-
-            if (this.model.get("value") === undefined || this.model.get("value") == "") {
-                $(this.el).addClass("warning");
-            }
+            }).css({"width": "96%", "margin": "0"}).val(this.model.get("value"))));
         },
 
         update: function (e) {
-            this.model.set({
+            var self = this;
+            this.model.save({
                 value: $(e.currentTarget).val()
+            }, {
+                success: function() {
+                    self.$el.removeClass().addClass("success");
+                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 1000, function() {
+                        self.$el.removeClass("success");
+                        self.$el.find("td").css("background-color", "");
+                    });
+                },
+                error: function() {
+                    self.$el.removeClass().addClass("error");
+                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 1000, function() {
+                        self.$el.removeClass("error");
+                        self.$el.find("td").css("background-color", "");
+                    });
+                }
             });
-
-            if (!$(this.el).hasClass("success")) {
-                $(this.el).removeClass("warning");
-                $(this.el).addClass("success");
-            }
-        },
-
-        render: function () {
-            return this;
         }
     });
 
+    var i18nCollection = Backbone.Collection.extend({
+        url: "/i18nAdmin/strings/",
+
+        parse: function(response) {
+            var res = [];
+            _.each(response.translations, function (string) {
+                res.push({
+                    _id: string._id,
+                    key: string.key,
+                    value: string.value,
+                    locale: response.locale,
+                    path: response.path
+                });
+            });
+            return res;
+        }
+    });
     var TableView = Backbone.View.extend({
         tagName: "table",
         className: "table",
 
-        collection: new i18nCollection,
+        collection: new i18nCollection(null, {
+            comparator: function(model) {
+                return model.get("key");
+            }
+        }),
 
         initialize: function () {
             var self = this;
 
             this.collection.on("reset", function () {
-                $(self.el).children().remove();
+
+                self.$el.children().remove();
 
                 var row = $("<tr></tr>");
 
-                row.append($("<td></td>").html("Key"));
-                row.append($("<td></td>").html("Translation"));
+                row.append($("<th style='width: 50%'></th>").html("Key"));
+                row.append($("<th style='width: 50%'></th>").html("Translation"));
 
                 self.$el.append($("<thead></thead>").append(row));
 
@@ -192,97 +195,9 @@ $(function () {
                     self.$el.append(row.el);
                 });
             });
-
-            this.collection.on("update");
-        },
-
-        load: function (path, locale) {
-            var self = this;
-
-            this.path = path;
-
-            if (locale !== undefined) {
-                this.locale = locale;
-            } else {
-                locale.en;
-            }
-
-            this.collection.fetch({
-                data: {
-                    path: App.select.collection.get(path).get("path"),
-                    locale: this.locale
-                }, success: function () {
-                    $("select", "#selectPath").val(self.path);
-                    $("select", "#selectLang").val(self.locale);
-
-                    Backbone.history.navigate("/path/" + $(":selected", "#selectPath").val() + "/" + self.locale, false);
-                }
-            });
-        },
-
-        switchLang: function (lang) {
-            var self = this;
-
-            this.locale = lang;
-
-            this.setPath = App.select.collection.get(this.path).get("path").replace("/nls/", "/nls/" + lang + "/");
-
-            Backbone.history.navigate("/path/" + $(":selected", "#selectPath").val() + "/" + App.table.locale, false);
-
-            this.collection.fetch({
-                data: {
-                    path: App.select.collection.get(this.path).get("path"),
-                    locale: this.locale
-                }
-            });
-        },
-
-        save: function () {
-            var self = this;
-
-            this.collection.each(function (model) {
-                model.save({path: self.setPath, locale: self.locale});
-            });
-        },
-
-        render: function () {
-            return this;
-        }
-    });
-
-    var i18nRouter = Backbone.Router.extend({
-        routes: {
-            "": "startRoute",
-            "path/:id(/:locale)": "pathRoute"
-        },
-
-        startAfter: function(collections) {
-            // Start history when required collections are loaded
-            var start = _.after(collections.length, _.once(function(){
-                Backbone.history.start({
-                    pushState: true,
-                    silent: false,
-                    root: "/i18nAdmin/"
-                });
-            }));
-
-            _.each(collections, function(collection) {
-                collection.bind('reset', start, Backbone.history)
-            });
-        },
-
-        startRoute: function () {
-
-        },
-
-        pathRoute: function (path, locale) {
-            App.table.load(path, locale);
-            App.table.switchLang(locale);
         }
     });
 
     var App = new BodyView();
-    var router = new i18nRouter();
-
-    router.startAfter([App.select.collection, App.language.collection]);
+    App.render();
 });
