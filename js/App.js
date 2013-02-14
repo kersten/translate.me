@@ -41,7 +41,11 @@ $(function () {
     });
     var LanguageView = Backbone.View.extend({
         tagName: "select",
-        collection: new i18nLanguageCollection,
+        collection: new i18nLanguageCollection({
+            comparator: function(model) {
+                return model.get("country");
+            }
+        }),
 
         events: {
             "change": "handleLanguageChanged"
@@ -76,7 +80,11 @@ $(function () {
     });
     var PathsView = Backbone.View.extend({
         tagName: "select",
-        collection: new i18nPathCollection,
+        collection: new i18nPathCollection({
+            comparator: function(model) {
+                return model.get("path");
+            }
+        }),
 
         events: {
             "change": "handlePathChanged"
