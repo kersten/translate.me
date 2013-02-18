@@ -13,7 +13,8 @@
         "underscore": "1.4.2",
         "esprima"   : "1.0.2",
         "traverse"  : "0.6.3",
-        "express"   : "3.1.0"
+        "express"   : "3.1.0",
+        "locale"    : "0.0.7"
     },
 
     "engines": {

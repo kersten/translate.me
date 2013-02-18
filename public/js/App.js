@@ -37,13 +37,23 @@ $(function () {
     });
 
     var i18nLanguageCollection = Backbone.Collection.extend({
-        url: "/i18nAdmin/js/countries.iso_3166-1.json"
+        url: "/i18n/locales",
+
+        parse: function(response) {
+            var result = [];
+            _.each(response, function(localeCode) {
+                result.push({
+                    code: localeCode
+                })
+            });
+            return result;
+        }
     });
     var LanguageView = Backbone.View.extend({
         tagName: "select",
         collection: new i18nLanguageCollection(null, {
             comparator: function(model) {
-                return model.get("country");
+                return model.get("code");
             }
         }),
 
@@ -58,7 +68,7 @@ $(function () {
             this.collection.on("reset", function () {
                 self.collection.each(function (model) {
                     var $option = $("<option></option>");
-                    $option.html(model.get("country"));
+                    $option.html(model.get("code"));
                     $option.attr("value", model.get("code"));
                     self.$el.append($option);
                 });
@@ -76,7 +86,17 @@ $(function () {
     });
 
     var i18nPathCollection = Backbone.Collection.extend({
-        url: "/i18nAdmin/paths/"
+        url: "/i18n/namespaces",
+
+        parse: function(response) {
+            var result = [];
+            _.each(response, function(namespace) {
+                result.push({
+                    path: namespace
+                })
+            });
+            return result;
+        }
     });
     var PathsView = Backbone.View.extend({
         tagName: "select",
@@ -155,7 +175,7 @@ $(function () {
     });
 
     var i18nCollection = Backbone.Collection.extend({
-        url: "/i18nAdmin/strings/",
+        url: "/i18n/admin/translations",
 
         parse: function(response) {
             var res = [];
