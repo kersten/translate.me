@@ -37,7 +37,7 @@ $(function () {
     });
 
     var i18nLanguageCollection = Backbone.Collection.extend({
-        url: "/i18nAdmin/cclist/"
+        url: "/i18nAdmin/js/countries.iso_3166-1.json"
     });
     var LanguageView = Backbone.View.extend({
         tagName: "select",
