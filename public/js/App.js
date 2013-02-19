@@ -158,14 +158,14 @@ $(function () {
             }, {
                 success: function() {
                     self.$el.removeClass().addClass("success");
-                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 1000, function() {
+                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 2000, function() {
                         self.$el.removeClass("success");
                         self.$el.find("td").css("background-color", "");
                     });
                 },
                 error: function() {
                     self.$el.removeClass().addClass("error");
-                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 1000, function() {
+                    self.$el.find("td").animate({backgroundColor: "#ffffff"}, 2000, function() {
                         self.$el.removeClass("error");
                         self.$el.find("td").css("background-color", "");
                     });
@@ -175,17 +175,17 @@ $(function () {
     });
 
     var i18nCollection = Backbone.Collection.extend({
-        url: "/i18n/admin/translations",
+        url: "/i18n/translations",
 
         parse: function(response) {
             var res = [];
-            _.each(response.translations, function (string) {
+            _.each(response, function (translation) {
                 res.push({
-                    _id: string._id,
-                    key: string.key,
-                    value: string.value,
-                    locale: response.locale,
-                    path: response.path
+                    _id: translation._id,
+                    key: translation.key,
+                    value: translation.value,
+                    locale: translation.locale,
+                    path: translation.path
                 });
             });
             return res;
