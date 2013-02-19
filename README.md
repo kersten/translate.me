@@ -14,3 +14,8 @@ possible to translate you app with an easy to use frontend.
 ## How the parser works
 
 ## Namespaces & Keys
+
+## License
+
+This software is licensed under the MIT License and can be read
+[here](https://raw.github.com/kersten/translate.me/master/LICENSE.md)
