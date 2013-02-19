@@ -17,6 +17,11 @@
         "locale"    : "0.0.7"
     },
 
+    "devDependencies": {
+        "chai"         : "*",
+        "mocha"        : "*"
+    },
+
     "engines": {
         "node": "0.8.x",
         "npm" : "1.x"
