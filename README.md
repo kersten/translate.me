@@ -7,10 +7,10 @@ possible to translate you app with an easy to use frontend.
 
 ## Administration Frontend
 
-## Handlebars
+## Handlebars mixin
 
 ## underscore.js mixin _.translate
 
-## How the parser
+## How the parser works
 
 ## Namespaces & Keys
