@@ -1,16 +1,16 @@
-### translate.me
+# translate.me
 
 This module will help you to easily implement translations into your app. With the integrated express middleware it is
 possible to translate you app with an easy to use frontend.
 
-### Setup
+## Setup
 
-### Administration Frontend
+## Administration Frontend
 
-### Handlebars
+## Handlebars
 
-### underscore.js mixin _.translate
+## underscore.js mixin _.translate
 
-### How the parser
+## How the parser
 
-### Namespaces & Keys
+## Namespaces & Keys
