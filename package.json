@@ -1,9 +1,9 @@
 {
-    "name"   : "requirejs-i18n-mongodb",
+    "name"   : "translate.me",
     "version": "0.1.0",
 
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
-    "description": "UI for managing i18n strings and publish them for requirejs i18n plugin.",
+    "description": "UI for managing i18n strings and publish them for the frontend.",
 
     "dependencies": {
         "async"     : "0.1.22",
