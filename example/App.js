@@ -7,7 +7,10 @@ var express = require("express"),
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
-// It is imported to place the reqisterRoutes between after all use statements
+/*
+It is imported to place the "reqister routers" after
+all use-statements, to prevent any blockage of other middlewares.
+*/
 translateMe.registerRoutes(app, true);
 
 app.get("/", function(req, res){
