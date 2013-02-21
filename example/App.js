@@ -12,13 +12,12 @@ It is imported to place the "reqister routers" after
 all use-statements, to prevent any blockage of other middlewares.
 */
 translateMe.registerRoutes(app, true);
+app.use("/js/underscore", express.static(__dirname + "/../node_modules/underscore/"));
+app.use("/translate.me", express.static(__dirname + "/../lib/browser"));
 
 app.get("/", function(req, res){
-    var body = "Hello World";
-    res.setHeader("Content-Type", "text/plain");
-    res.setHeader("Content-Length", body.length);
-    res.end(body);
+    res.sendfile(__dirname + "/views/index.html");
 });
 
-app.listen(3000);
-console.log("Listening on port 3000");
+app.listen(8080);
+console.log("Listening on port 8080");

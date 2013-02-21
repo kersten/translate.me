@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>translate.me demo</title>
+
+    <script type="text/javascript" src="/i18n/de/translations"></script>
+    <script type="text/javascript" src="/js/underscore/underscore.js"></script>
+    <script type="text/javascript" src="/translate.me/underscore.translate.js"></script>
+    <script type="text/javascript">
+        document.getElementById("helloworld").innerHTML = _.translate("Hello World", "ns:example");
+    </script>
+</head>
+<body>
+    <div id="helloworld"></div>
+</body>
+</html>
