@@ -1,6 +1,8 @@
 Backbone.Model.prototype.idAttribute = "_id";
 
 $(function () {
+    var root = "/translate.me";
+
     var BodyView = Backbone.View.extend({
         el: '#content',
 
@@ -9,18 +11,18 @@ $(function () {
 
             this.viewConfig = new Backbone.Model();
             this.listenTo(this.viewConfig, "change", function(model) {
-                if(typeof model.get("path") === "string" && model.get("language")) {
+                if(typeof model.get("namespace") === "string" && model.get("language")) {
                     this.table.collection.fetch({
                         data: {
-                            path: model.get("path"),
+                            namespace: model.get("namespace"),
                             locale: model.get("language")
                         }
                     });
                 }
             });
-            this.select = new PathsView();
-            this.listenTo(this.select, "path:changed", function(path) {
-                this.viewConfig.set("path", path);
+            this.select = new NamespaceView();
+            this.listenTo(this.select, "namespace:changed", function(namespace) {
+                this.viewConfig.set("namespace", namespace);
             });
             this.language = new LanguageView();
             this.listenTo(this.language, "language:changed", function(countryCode) {
@@ -29,15 +31,15 @@ $(function () {
         },
 
         render: function () {
-            $("#selectPath").append(this.select.render().el);
-            $("#selectLang").append(this.language.render().el);
+            $("#namespaceSelector").append(this.select.render().el);
+            $("#languageSelector").append(this.language.render().el);
             $("#table").append(this.table.render().el);
             return this;
         }
     });
 
-    var i18nLanguageCollection = Backbone.Collection.extend({
-        url: "/i18n/locales",
+    var LanguageCollection = Backbone.Collection.extend({
+        url: root + "/locales",
 
         parse: function(response) {
             var result = [];
@@ -51,9 +53,9 @@ $(function () {
     });
     var LanguageView = Backbone.View.extend({
         tagName: "select",
-        collection: new i18nLanguageCollection(null, {
+        collection: new LanguageCollection(null, {
             comparator: function(model) {
-                return model.get("code");
+                return model.get("code").toLowerCase();
             }
         }),
 
@@ -85,29 +87,29 @@ $(function () {
         }
     });
 
-    var i18nPathCollection = Backbone.Collection.extend({
-        url: "/i18n/namespaces",
+    var NamespaceCollection = Backbone.Collection.extend({
+        url: root + "/namespaces",
 
         parse: function(response) {
             var result = [];
             _.each(response, function(namespace) {
                 result.push({
-                    path: namespace
+                    namespace: namespace
                 })
             });
             return result;
         }
     });
-    var PathsView = Backbone.View.extend({
+    var NamespaceView = Backbone.View.extend({
         tagName: "select",
-        collection: new i18nPathCollection(null, {
+        collection: new NamespaceCollection(null, {
             comparator: function(model) {
-                return model.get("path");
+                return model.get("namespace").toLowerCase();
             }
         }),
 
         events: {
-            "change": "handlePathChanged"
+            "change": "handleNamespaceChanged"
         },
 
         initialize: function () {
@@ -116,22 +118,22 @@ $(function () {
             this.collection.fetch();
             this.collection.on("reset", function () {
                 self.collection.each(function (model) {
-                    var path = model.get("path"),
+                    var namespace = model.get("namespace"),
                         $option = $("<option></option>");
-                    $option.attr("value", path);
-                    $option.html(path.length > 0 ? path : "Global");
+                    $option.attr("value", namespace);
+                    $option.html(namespace.length > 0 ? namespace : "Global");
                     self.$el.append($option);
                 });
-                self.firePathChanged(self.collection.first().get("path"));
+                self.fireNamespaceChanged(self.collection.first().get("namespace"));
             });
         },
 
-        handlePathChanged: function(event) {
-            this.firePathChanged($(event.target).find(":selected").attr("value"));
+        handleNamespaceChanged: function(event) {
+            this.fireNamespaceChanged($(event.target).find(":selected").attr("value"));
         },
 
-        firePathChanged: function(path) {
-            this.trigger("path:changed", path);
+        fireNamespaceChanged: function(namespace) {
+            this.trigger("namespace:changed", namespace);
         }
     });
 
@@ -174,8 +176,8 @@ $(function () {
         }
     });
 
-    var i18nCollection = Backbone.Collection.extend({
-        url: "/i18n/translations",
+    var TranslationCollection = Backbone.Collection.extend({
+        url: root + "/translations",
 
         parse: function(response) {
             var res = [];
@@ -185,7 +187,7 @@ $(function () {
                     key: translation.key,
                     value: translation.value,
                     locale: translation.locale,
-                    path: translation.path
+                    namespace: translation.namespace
                 });
             });
             return res;
@@ -195,9 +197,9 @@ $(function () {
         tagName: "table",
         className: "table",
 
-        collection: new i18nCollection(null, {
+        collection: new TranslationCollection(null, {
             comparator: function(model) {
-                return model.get("key");
+                return model.get("key").toLowerCase();
             }
         }),
 
