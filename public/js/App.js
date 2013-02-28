@@ -1,8 +1,6 @@
 Backbone.Model.prototype.idAttribute = "_id";
 
 $(function () {
-    var root = "/translate.me";
-
     var BodyView = Backbone.View.extend({
         el: '#content',
 
@@ -39,7 +37,7 @@ $(function () {
     });
 
     var LanguageCollection = Backbone.Collection.extend({
-        url: root + "/locales",
+        url: "/translate.me/api/json/locales",
 
         parse: function(response) {
             var result = [];
@@ -88,7 +86,7 @@ $(function () {
     });
 
     var NamespaceCollection = Backbone.Collection.extend({
-        url: root + "/namespaces",
+        url: "/translate.me/api/json/namespaces",
 
         parse: function(response) {
             var result = [];
@@ -177,7 +175,7 @@ $(function () {
     });
 
     var TranslationCollection = Backbone.Collection.extend({
-        url: root + "/translations",
+        url: "/translate.me/api/json/translations",
 
         parse: function(response) {
             var res = [];
