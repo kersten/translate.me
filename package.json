@@ -1,9 +1,11 @@
 {
     "name"   : "translate.me",
-    "version": "0.2.2",
+    "version": "0.2.3",
 
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
     "description": "UI for managing i18n strings and publish them for the frontend.",
+
+    "keywords": ["translations", "translate", "i18n", "gettext", "multi language", "language"],
 
     "dependencies": {
         "async"     : "0.1.22",
