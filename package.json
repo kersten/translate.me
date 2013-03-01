@@ -5,6 +5,18 @@
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
     "description": "UI for managing i18n strings and publish them for the frontend.",
 
+    "contributors": [
+        {
+            "name" : "Kersten Burkhardt",
+            "email": "kerstenk@gmail.com"
+        },
+        {
+            "name" : "Pierre Schubert",
+            "email": "366256@gmail.com"
+        }
+    ],
+
+    "homepage": "https://github.com/kersten/translate.me",
     "keywords": ["translations", "translate", "i18n", "gettext", "multi language", "language"],
 
     "dependencies": {
