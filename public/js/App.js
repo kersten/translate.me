@@ -13,7 +13,8 @@ $(function () {
                     this.table.collection.fetch({
                         data: {
                             namespace: model.get("namespace"),
-                            locale: model.get("language")
+                            locale: model.get("language"),
+                            emulateMissingTranslations: true
                         }
                     });
                 }
