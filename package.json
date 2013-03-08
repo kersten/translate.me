@@ -1,6 +1,6 @@
 {
     "name"   : "translate.me",
-    "version": "0.2.3",
+    "version": "0.2.4",
 
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
     "description": "UI for managing i18n strings and publish them for the frontend.",
