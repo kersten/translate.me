@@ -108,6 +108,9 @@ translations inside a namespace out of another namespace.
 With underscore namespaces are as simple as pie. Just pass a second parameter to the ```translate``` function and it is
 used as the namespace.
 
+    _.translate("Hello World", "MyCustomNamespace");
+    _.translate("Hello World from 'Global' namespace");
+
 ## License
 
 This software is licensed under the MIT License and can be read
