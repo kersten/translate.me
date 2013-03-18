@@ -45,6 +45,12 @@ element.
 
 ## RequireJS
 
+If your application uses requirejs module loading you just need to include one file.
+
+    define(['underscore', '/translate.me/translate.amd.js'], function (_) {
+        console.log(_.translate("Hello World", "MyCustomNamespace"));
+    });
+
 ## Non amd
 
 You may use this module without amd loading, to do that you have to load jquery and underscore. Before translating works
@@ -52,7 +58,6 @@ you have to implement the following scripts:
 
     <script type="text/javascript" src="/translate.me/api/script/translations"></script>
     <script type="text/javascript" src="/translate.me/api/script/stats"></script>
-
     <script type="text/javascript" src="/translate.me/translate.js"></script>
 
 Then you can start using ```_.translate``` in your JS code.
@@ -61,10 +66,6 @@ Then you can start using ```_.translate``` in your JS code.
         _.setPreferredLocale('en');
         $('#helloworld').text(_.translate("Hello World", "MyCustomNamespace"));
     });
-
-## Handlebars mixin
-
-## underscore.js mixin _.translate
 
 ## Namespaces & Keys
 
