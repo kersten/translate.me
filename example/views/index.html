@@ -3,11 +3,20 @@
 <head>
     <title>translate.me demo</title>
 
-    <script type="text/javascript" src="/i18n/de/translations"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+    <script type="text/javascript" src="/translate.me/api/json/translations"></script>
     <script type="text/javascript" src="/js/underscore/underscore.js"></script>
-    <script type="text/javascript" src="/translate.me/underscore.translate.js"></script>
+
+    <script type="text/javascript" src="/translate.me/api/script/translations"></script>
+    <script type="text/javascript" src="/translate.me/api/script/stats"></script>
+
+    <script type="text/javascript" src="/translate.me/translate.js"></script>
     <script type="text/javascript">
-        document.getElementById("helloworld").innerHTML = _.translate("Hello World", "ns:example");
+        $(function () {
+            _.setPreferredLocale('en');
+            $('#helloworld').text(_.translate("Hello World", "example"));
+        });
     </script>
 </head>
 <body>

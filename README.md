@@ -3,10 +3,17 @@
 This module will help you to easily implement translations into your app. With the integrated express middleware it is
 possible to translate you app with an easy to use frontend.
 
-## Parser
+## Installation
 
-The parser starts just right after the launch of your application. At this time it only parses ```.js``` and
-```.mustache``` files. It searches for all occurrences of ```_.translate``` and ```{{translation key="Value"}}```.
+Just hit ```npm install translate.me``` in your application directory.
+
+## The Parser
+
+The parser starts just right after the launch of your application. It searches for all occurrences of ```_.translate```
+and ```{{translation key="Value"}}```. The keys will be saved into the given mongo database.
+
+At this time it only parses ```.js``` and ```.mustache``` files. This limitations will be fixed in one of the next
+versions.
 
 ## Setup
 
@@ -30,7 +37,30 @@ The parser starts just right after the launch of your application. At this time 
 
 ## Administration Frontend
 
-If you have enabled the administration frontend just open the url ```/translate.me/admin``` in the browser.
+If you have enabled the administration frontend just open the url ```/translate.me/admin``` in the browser. Translating
+in the UI is very easy. You can select your namespaces if you use them, or just the global namespace where all keys
+without a namespace are saved. Initially the global namespace and one language of your available translations is
+displayed. You get a list of all keys, just translate them. They will be saved after loosing focus of the current input
+element.
+
+## RequireJS
+
+## Non amd
+
+You may use this module without amd loading, to do that you have to load jquery and underscore. Before translating works
+you have to implement the following scripts:
+
+    <script type="text/javascript" src="/translate.me/api/script/translations"></script>
+    <script type="text/javascript" src="/translate.me/api/script/stats"></script>
+
+    <script type="text/javascript" src="/translate.me/translate.js"></script>
+
+Then you can start using ```_.translate``` in your JS code.
+
+     $(function () {
+        _.setPreferredLocale('en');
+        $('#helloworld').text(_.translate("Hello World", "MyCustomNamespace"));
+    });
 
 ## Handlebars mixin
 
