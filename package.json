@@ -1,6 +1,6 @@
 {
     "name"   : "translate.me",
-    "version": "0.2.6",
+    "version": "0.2.7",
 
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
     "description": "UI for managing i18n strings and publish them for the frontend.",
@@ -15,6 +15,11 @@
             "email": "366256@gmail.com"
         }
     ],
+
+    "repository": {
+        "type" : "git",
+        "url": "https://github.com/kersten/translate.me.git"
+    },
 
     "homepage": "https://github.com/kersten/translate.me",
     "keywords": ["translations", "translate", "i18n", "gettext", "multi language", "language"],
