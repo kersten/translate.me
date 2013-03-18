@@ -14,6 +14,13 @@ app.use('/translate.me', express.static(__dirname + '/../lib/browser'));
 translateMe = new TranslateMe('mongodb://localhost/i18n_example', 'en', ['de', 'fr']);
 
 /*
+ * Add paths that contains files with translations
+ */
+translateMe.generateDefaultTranslations([
+    path.join(__dirname, "views")
+]);
+
+/*
  * Overwrite getLocale function, to enable custom selection of the current locale.
  */
 translateMe.getLocale = function(req, callback) {
