@@ -25,14 +25,14 @@
     "keywords": ["translations", "translate", "i18n", "gettext", "multi language", "language"],
 
     "dependencies": {
-        "async"     : "0.1.22",
+        "async"     : "0.2.6",
         "handlebars": "1.0.8",
-        "mongoose"  : "3.4.0",
-        "dive"      : "0.2.0",
-        "underscore": "1.4.2",
+        "mongoose"  : "3.6.0",
+        "dive"      : "0.3.0",
+        "underscore": "1.4.4",
         "esprima"   : "1.0.2",
         "traverse"  : "0.6.3",
-        "express"   : "3.1.0",
+        "express"   : "3.x",
         "locale"    : "0.0.8",
         "mime"      : "1.2.9"
     },
