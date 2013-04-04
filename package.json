@@ -1,6 +1,6 @@
 {
     "name"   : "translate.me",
-    "version": "0.3.1",
+    "version": "0.3.2",
 
     "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
     "description": "UI for managing i18n strings and publish them for the frontend.",
@@ -27,7 +27,7 @@
     "dependencies": {
         "async"     : "0.2.6",
         "handlebars": "1.0.8",
-        "mongoose"  : "3.6.0",
+        "mongoose"  : "3.6.4",
         "dive"      : "0.3.0",
         "underscore": "1.4.4",
         "esprima"   : "1.0.2",
