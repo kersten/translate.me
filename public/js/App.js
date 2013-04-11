@@ -5,6 +5,7 @@ $(function () {
         el: '#content',
 
         initialize: function () {
+            var self = this;
             this.table = new TableView();
 
             this.viewConfig = new Backbone.Model();
@@ -15,6 +16,9 @@ $(function () {
                             namespace: model.get("namespace"),
                             locale: model.get("language"),
                             emulateMissingTranslations: true
+                        },
+                        success: function () {
+                            self.table.render();
                         }
                     });
                 }
@@ -65,15 +69,16 @@ $(function () {
         initialize: function () {
             var self = this;
 
-            this.collection.fetch();
-            this.collection.on("reset", function () {
-                self.collection.each(function (model) {
-                    var $option = $("<option></option>");
-                    $option.html(model.get("code"));
-                    $option.attr("value", model.get("code"));
-                    self.$el.append($option);
-                });
-                self.fireLanguageChanged(self.collection.first().get("code"));
+            this.collection.fetch({
+                success: function () {
+                    self.collection.each(function (model) {
+                        var $option = $("<option></option>");
+                        $option.html(model.get("code"));
+                        $option.attr("value", model.get("code"));
+                        self.$el.append($option);
+                    });
+                    self.fireLanguageChanged(self.collection.first().get("code"));
+                }
             });
         },
 
@@ -114,16 +119,17 @@ $(function () {
         initialize: function () {
             var self = this;
 
-            this.collection.fetch();
-            this.collection.on("reset", function () {
-                self.collection.each(function (model) {
-                    var namespace = model.get("namespace"),
-                        $option = $("<option></option>");
-                    $option.attr("value", namespace);
-                    $option.html(namespace.length > 0 ? namespace : "Global");
-                    self.$el.append($option);
-                });
-                self.fireNamespaceChanged(self.collection.first().get("namespace"));
+            this.collection.fetch({
+                success: function () {
+                    self.collection.each(function (model) {
+                        var namespace = model.get("namespace"),
+                            $option = $("<option></option>");
+                        $option.attr("value", namespace);
+                        $option.html(namespace.length > 0 ? namespace : "Global");
+                        self.$el.append($option);
+                    });
+                    self.fireNamespaceChanged(self.collection.first().get("namespace"));
+                }
             });
         },
 
@@ -202,28 +208,25 @@ $(function () {
             }
         }),
 
-        initialize: function () {
-            var self = this;
+        render: function () {
+            this.$el.children().remove();
 
-            this.collection.on("reset", function () {
+            var row = $("<tr></tr>");
 
-                self.$el.children().remove();
+            row.append($("<th style='width: 50%'></th>").html("Key"));
+            row.append($("<th style='width: 50%'></th>").html("Translation"));
 
-                var row = $("<tr></tr>");
+            this.$el.append($("<thead></thead>").append(row));
 
-                row.append($("<th style='width: 50%'></th>").html("Key"));
-                row.append($("<th style='width: 50%'></th>").html("Translation"));
-
-                self.$el.append($("<thead></thead>").append(row));
-
-                self.collection.each(function (model) {
-                    var row = new RowView({
-                        model: model
-                    });
-
-                    self.$el.append(row.el);
+            this.collection.each(function (model) {
+                var row = new RowView({
+                    model: model
                 });
-            });
+
+                this.$el.append(row.el);
+            }, this);
+
+            return this;
         }
     });
 
