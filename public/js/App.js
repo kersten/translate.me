@@ -1,6 +1,8 @@
 Backbone.Model.prototype.idAttribute = "_id";
 
 $(function () {
+    'use strict';
+
     var BodyView = Backbone.View.extend({
         el: '#content',
 
@@ -231,5 +233,35 @@ $(function () {
     });
 
     var App = new BodyView();
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            ':language/*namespace': 'navigate'
+        },
+
+        navigate: function (language, namespace) {
+            console.log(language, namespace);
+
+            App.language.fireLanguageChanged(language);
+            App.select.fireNamespaceChanged(namespace);
+
+            $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
+            $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
+
+            this.listenTo(App.language, "language:loaded", function () {
+                $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
+            });
+
+            this.listenTo(App.select, "namespace:loaded", function () {
+                $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
+            });
+
+        }
+    });
+
+    var router = new Router();
+
+    Backbone.history.start({pushState: false, root: "/translate.me/admin"});
+
     App.render();
 });
