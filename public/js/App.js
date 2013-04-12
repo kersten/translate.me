@@ -23,13 +23,13 @@ $(function () {
                     });
                 }
             });
-            this.language = new LanguageView();
-            this.listenTo(this.language, "language:changed", function(countryCode) {
-                this.viewConfig.set("language", countryCode);
-            });
             this.select = new NamespaceView();
             this.listenTo(this.select, "namespace:changed", function(namespace) {
                 this.viewConfig.set("namespace", namespace);
+            });
+            this.language = new LanguageView();
+            this.listenTo(this.language, "language:changed", function(countryCode) {
+                this.viewConfig.set("language", countryCode);
             });
         },
 
@@ -77,19 +77,13 @@ $(function () {
                         $option.attr("value", model.get("code"));
                         self.$el.append($option);
                     });
-                    self.trigger("language:loaded");
-                    //self.fireLanguageChanged(self.collection.first().get("code"));
+                    self.fireLanguageChanged(self.collection.first().get("code"));
                 }
             });
         },
 
         handleLanguageChanged: function(event) {
-            var language = $(event.target).find(":selected").attr("value"),
-                namespace = $(App.select.el).find(":selected").attr("value");
-
-            Backbone.history.navigate('/' + language + '/' + namespace, false);
-
-            this.fireLanguageChanged(language);
+            this.fireLanguageChanged($(event.target).find(":selected").attr("value"));
         },
 
         fireLanguageChanged: function(countryCode) {
@@ -134,19 +128,13 @@ $(function () {
                         $option.html(namespace.length > 0 ? namespace : "Global");
                         self.$el.append($option);
                     });
-                    self.trigger("namespace:loaded");
-                    //self.fireNamespaceChanged(self.collection.first().get("namespace"));
+                    self.fireNamespaceChanged(self.collection.first().get("namespace"));
                 }
             });
         },
 
         handleNamespaceChanged: function(event) {
-            var language = $(App.language.el).find(":selected").attr("value"),
-                namespace = $(event.target).find(":selected").attr("value");
-
-            Backbone.history.navigate('/' + language + '/' + namespace, false);
-
-            this.fireNamespaceChanged(namespace);
+            this.fireNamespaceChanged($(event.target).find(":selected").attr("value"));
         },
 
         fireNamespaceChanged: function(namespace) {
@@ -162,22 +150,18 @@ $(function () {
         },
 
         initialize: function () {
-            console.log( this.model)
-
             $(this.el).append($("<td></td>").css({"vertical-align": "middle"}).html(this.model.get("key")));
             $(this.el).append($("<td></td>").html($("<input>").attr({
                 id: this.model.get("id"),
                 placeholder: "Missing",
-                type: "text",
-                "data-origin": this.model.get('origin')
+                type: "text"
             }).css({"width": "96%", "margin": "0"}).val(this.model.get("value"))));
         },
 
         update: function (e) {
             var self = this;
             this.model.save({
-                value: $(e.currentTarget).val(),
-                origin: $(e.currentTarget).data('origin')
+                value: $(e.currentTarget).val()
             }, {
                 success: function() {
                     self.$el.removeClass().addClass("success");
@@ -208,8 +192,7 @@ $(function () {
                     key: translation.key,
                     value: translation.value,
                     locale: translation.locale,
-                    namespace: translation.namespace,
-                    origin: translation.origin
+                    namespace: translation.namespace
                 });
             });
             return res;
@@ -248,35 +231,5 @@ $(function () {
     });
 
     var App = new BodyView();
-
-    var Router = Backbone.Router.extend({
-        routes: {
-            ':language/*namespace': 'navigate'
-        },
-
-        navigate: function (language, namespace) {
-            console.log(language, namespace);
-
-            App.language.fireLanguageChanged(language);
-            App.select.fireNamespaceChanged(namespace);
-
-            $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
-            $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
-
-            this.listenTo(App.language, "language:loaded", function () {
-                $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
-            });
-
-            this.listenTo(App.select, "namespace:loaded", function () {
-                $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
-            });
-
-        }
-    });
-
-    new Router();
-
-    Backbone.history.start({pushState: false, root: "/translate.me/admin"});
-
     App.render();
 });
