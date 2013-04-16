@@ -1,4 +1,4 @@
-[
+var locales_list = [
     {"code": "en", "country": "English"},
     {"code": "de", "country": "German"},
     {"code": "fr", "country": "French"},
@@ -9,6 +9,7 @@
     {"code": "ar_EG", "country": "Arabic (Egypt)"},
     {"code": "ar_IQ", "country": "Arabic (Iraq)"},
     {"code": "ar_JO", "country": "Arabic (Jordan)"},
+    {"code": "ar_KW", "country": "Arabic (Kuwait)"},
     {"code": "ar_KW", "country": "Arabic (Kuwait)"},
     {"code": "ar_LB", "country": "Arabic (Lebanon)"},
     {"code": "ar_LY", "country": "Arabic (Libya)"},

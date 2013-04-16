@@ -3,148 +3,30 @@ Backbone.Model.prototype.idAttribute = "_id";
 $(function () {
     'use strict';
 
-    var BodyView = Backbone.View.extend({
-        el: '#content',
+    var App, BodyView, LanguageCollection, LanguageView, NamespaceCollection, NamespaceView, IsoCollection,
+        IsoView, RowView, TranslationCollection, TableView, url;
 
-        initialize: function () {
-            var self = this;
-            this.table = new TableView();
+    url = $.url();
 
-            this.viewConfig = new Backbone.Model();
-            this.listenTo(this.viewConfig, "change", function(model) {
-                if(typeof model.get("namespace") === "string" && model.get("language")) {
-                    this.table.collection.fetch({
-                        data: {
-                            namespace: model.get("namespace"),
-                            locale: model.get("language"),
-                            emulateMissingTranslations: true
-                        },
-                        success: function () {
-                            self.table.render();
-                        }
-                    });
-                }
-            });
-            this.select = new NamespaceView();
-            this.listenTo(this.select, "namespace:changed", function(namespace) {
-                this.viewConfig.set("namespace", namespace);
-            });
-            this.language = new LanguageView();
-            this.listenTo(this.language, "language:changed", function(countryCode) {
-                this.viewConfig.set("language", countryCode);
-            });
-        },
-
-        render: function () {
-            $("#namespaceSelector").append(this.select.render().el);
-            $("#languageSelector").append(this.language.render().el);
-            $("#table").append(this.table.render().el);
-            return this;
-        }
-    });
-
-    var LanguageCollection = Backbone.Collection.extend({
-        url: "/translate.me/api/json/locales",
+    TranslationCollection = Backbone.Collection.extend({
+        url: "/translate.me/api/json/translations",
 
         parse: function(response) {
-            var result = [];
-            _.each(response, function(localeCode) {
-                result.push({
-                    code: localeCode
-                })
+            var res = [];
+            _.each(response, function (translation) {
+                res.push({
+                    _id: translation._id,
+                    key: translation.key,
+                    value: translation.value,
+                    locale: translation.locale,
+                    namespace: translation.namespace
+                });
             });
-            return result;
-        }
-    });
-    var LanguageView = Backbone.View.extend({
-        tagName: "select",
-        collection: new LanguageCollection(null, {
-            comparator: function(model) {
-                return model.get("code").toLowerCase();
-            }
-        }),
-
-        events: {
-            "change": "handleLanguageChanged"
-        },
-
-        initialize: function () {
-            var self = this;
-
-            this.collection.fetch({
-                success: function () {
-                    self.collection.each(function (model) {
-                        var $option = $("<option></option>");
-                        $option.html(model.get("code"));
-                        $option.attr("value", model.get("code"));
-                        self.$el.append($option);
-                    });
-                    self.fireLanguageChanged(self.collection.first().get("code"));
-                }
-            });
-        },
-
-        handleLanguageChanged: function(event) {
-            this.fireLanguageChanged($(event.target).find(":selected").attr("value"));
-        },
-
-        fireLanguageChanged: function(countryCode) {
-            this.trigger("language:changed", countryCode);
+            return res;
         }
     });
 
-    var NamespaceCollection = Backbone.Collection.extend({
-        url: "/translate.me/api/json/namespaces",
-
-        parse: function(response) {
-            var result = [];
-            _.each(response, function(namespace) {
-                result.push({
-                    namespace: namespace
-                })
-            });
-            return result;
-        }
-    });
-    var NamespaceView = Backbone.View.extend({
-        tagName: "select",
-        collection: new NamespaceCollection(null, {
-            comparator: function(model) {
-                return model.get("namespace").toLowerCase();
-            }
-        }),
-
-        events: {
-            "change": "handleNamespaceChanged"
-        },
-
-        initialize: function () {
-            var self = this;
-
-            this.collection.fetch({
-                success: function () {
-                    self.collection.each(function (model) {
-                        var namespace = model.get("namespace"),
-                            $option = $("<option></option>");
-                        $option.attr("value", namespace);
-                        $option.html(namespace.length > 0 ? namespace : "Global");
-                        self.$el.append($option);
-                    });
-                    self.fireNamespaceChanged(self.collection.first().get("namespace"));
-                }
-            });
-        },
-
-        handleNamespaceChanged: function(event) {
-            this.fireNamespaceChanged($(event.target).find(":selected").attr("value"));
-        },
-
-        fireNamespaceChanged: function(namespace) {
-            this.trigger("namespace:changed", namespace);
-        }
-    });
-
-    var RowView = Backbone.View.extend({
+    RowView = Backbone.View.extend({
         tagName: "tr",
 
         events: {
@@ -183,24 +65,7 @@ $(function () {
         }
     });
 
-    var TranslationCollection = Backbone.Collection.extend({
-        url: "/translate.me/api/json/translations",
-
-        parse: function(response) {
-            var res = [];
-            _.each(response, function (translation) {
-                res.push({
-                    _id: translation._id,
-                    key: translation.key,
-                    value: translation.value,
-                    locale: translation.locale,
-                    namespace: translation.namespace
-                });
-            });
-            return res;
-        }
-    });
-    var TableView = Backbone.View.extend({
+    TableView = Backbone.View.extend({
         tagName: "table",
         className: "table",
 
@@ -232,36 +97,225 @@ $(function () {
         }
     });
 
-    var App = new BodyView();
+    NamespaceCollection = Backbone.Collection.extend({
+        url: "/translate.me/api/json/namespaces",
 
-    var Router = Backbone.Router.extend({
-        routes: {
-            ':language/*namespace': 'navigate'
-        },
-
-        navigate: function (language, namespace) {
-            console.log(language, namespace);
-
-            App.language.fireLanguageChanged(language);
-            App.select.fireNamespaceChanged(namespace);
-
-            $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
-            $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
-
-            this.listenTo(App.language, "language:loaded", function () {
-                $('option[value="' + language + '"]', App.language.el).attr('selected', 'selected');
+        parse: function(response) {
+            var result = [];
+            _.each(response, function(namespace) {
+                result.push({
+                    namespace: namespace
+                });
             });
-
-            this.listenTo(App.select, "namespace:loaded", function () {
-                $('option[value="' + namespace + '"]', App.select.el).attr('selected', 'selected');
-            });
-
+            return result;
         }
     });
 
-    var router = new Router();
+    NamespaceView = Backbone.View.extend({
+        tagName: "select",
+        collection: new NamespaceCollection(null, {
+            comparator: function(model) {
+                return model.get("namespace").toLowerCase();
+            }
+        }),
 
-    Backbone.history.start({pushState: false, root: "/translate.me/admin"});
+        events: {
+            "change": "handleNamespaceChanged"
+        },
+
+        initialize: function () {
+            var self = this;
+
+            this.collection.fetch({
+                success: function () {
+                    self.collection.each(function (model) {
+                        var namespace = model.get("namespace"),
+                            $option = $("<option></option>");
+                        $option.attr("value", namespace);
+                        $option.html(namespace.length > 0 ? namespace : "Global");
+                        self.$el.append($option);
+                    });
+
+                    if (url.fparam('namespace')) {
+                        $('option[value="'+ decodeURIComponent(url.fparam('namespace')) +'"]', self.el).attr('selected', 'selected');
+                    } else {
+                        $('option[value='+ self.collection.first().get("namespace") +']', self.el).attr('selected', 'selected');
+                    }
+
+                    self.fireNamespaceChanged($(self.el).find(":selected").attr("value"));
+                    $(self.el).combobox();
+                }
+            });
+        },
+
+        handleNamespaceChanged: function(event) {
+            this.fireNamespaceChanged($(event.target).find(":selected").attr("value"));
+        },
+
+        fireNamespaceChanged: function(namespace) {
+            var locale = '';
+
+            this.trigger("namespace:changed", namespace);
+
+            if (url.fparam('locale')) {
+                locale = 'locale=' + encodeURIComponent(url.fparam('locale')) + '&';
+            }
+
+            window.location.hash = locale + 'namespace=' + encodeURIComponent(namespace);
+            url = $.url();
+        }
+    });
+
+    LanguageCollection = Backbone.Collection.extend({
+        url: "/translate.me/api/json/locales",
+
+        parse: function(response) {
+            var result = [];
+            _.each(response, function(localeCode) {
+                result.push({
+                    code: localeCode
+                });
+            });
+            return result;
+        }
+    });
+
+    LanguageView = Backbone.View.extend({
+        tagName: 'select',
+        className: 'combobox',
+
+        collection: new LanguageCollection(null, {
+            comparator: function(model) {
+                return model.get("code").toLowerCase();
+            }
+        }),
+
+        events: {
+            "change": "handleLanguageChanged"
+        },
+
+        initialize: function () {
+            var self = this;
+
+            this.collection.fetch({
+                success: function () {
+                    self.collection.each(function (model) {
+                        var $option = $("<option></option>");
+                        $option.html(model.get("code"));
+                        $option.attr("value", model.get("code"));
+                        self.$el.append($option);
+                    });
+
+                    if (url.fparam('locale')) {
+                        $('option[value='+ decodeURIComponent(url.fparam('locale')) +']', self.el).attr('selected', 'selected');
+                    } else {
+                        $('option[value='+ self.collection.first().get("code") +']', self.el).attr('selected', 'selected');
+                    }
+
+                    self.fireLanguageChanged($(self.el).find(":selected").attr("value"));
+                    $(self.el).combobox();
+                }
+            });
+        },
+
+        handleLanguageChanged: function(event) {
+            this.fireLanguageChanged($(event.target).find(":selected").attr("value"));
+        },
+
+        fireLanguageChanged: function(countryCode) {
+            var namespace = '';
+
+            this.trigger("language:changed", countryCode);
+
+            if (url.fparam('namespace')) {
+                namespace = '&namespace=' + encodeURIComponent(url.fparam('namespace'));
+            }
+
+            window.location.hash = 'locale=' + encodeURIComponent(countryCode) + namespace;
+            url = $.url();
+        }
+    });
+
+    IsoCollection = Backbone.Collection.extend({
+        parse: function(response) {
+            var result = [];
+            _.each(response, function(localeCode) {
+                result.push({
+                    code: localeCode
+                });
+            });
+            return result;
+        }
+    });
+
+    IsoView = Backbone.View.extend({
+        tagName: 'button',
+        className: 'btn disabled',
+
+        collection: new IsoCollection(locales_list, {
+            comparator: function(model) {
+                var locale = model.get("code").split('_');
+
+                return locale[0].toLowerCase() + ((locale[1]) ? '_' + locale[1].toUpperCase() : '');
+            }
+        }),
+
+        events: {
+            "click": "handleAddLanguage"
+        },
+
+        initialize: function () {
+            $(this.el).html('<i class="icon-plus-sign"></i> Add language');
+        },
+
+        handleAddLanguage: function (e) {
+            e.preventDefault();
+        }
+    });
+
+    BodyView = Backbone.View.extend({
+        el: '#content',
+
+        initialize: function () {
+            var self = this;
+            this.table = new TableView();
+
+            this.viewConfig = new Backbone.Model();
+            this.listenTo(this.viewConfig, "change", function(model) {
+                if(typeof model.get("namespace") === "string" && model.get("language")) {
+                    this.table.collection.fetch({
+                        data: {
+                            namespace: model.get("namespace"),
+                            locale: model.get("language"),
+                            emulateMissingTranslations: true
+                        },
+                        success: function () {
+                            self.table.render();
+                        }
+                    });
+                }
+            });
+            this.select = new NamespaceView();
+            this.listenTo(this.select, "namespace:changed", function(namespace) {
+                this.viewConfig.set("namespace", namespace);
+            });
+            this.language = new LanguageView();
+            this.listenTo(this.language, "language:changed", function(countryCode) {
+                this.viewConfig.set("language", countryCode);
+            });
+            this.addLanguage = new IsoView();
+        },
+
+        render: function () {
+            $("#namespaceSelector").append(this.select.render().el);
+            $("#languageSelector").append(this.language.render().el);
+            $("#addLanguage").append(this.addLanguage.render().el);
+            $("#table").append(this.table.render().el);
+            return this;
+        }
+    });
+
+    App = new BodyView();
 
     App.render();
 });
