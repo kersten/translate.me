@@ -3,10 +3,61 @@ Backbone.Model.prototype.idAttribute = "_id";
 $(function () {
     'use strict';
 
-    var App, BodyView, LanguageCollection, LanguageView, NamespaceCollection, NamespaceView, IsoCollection,
+    var App, BodyView, SearchView, LanguageCollection, LanguageView, NamespaceCollection, NamespaceView, IsoCollection,
         IsoView, RowView, TranslationCollection, TableView, url;
 
     url = $.url();
+
+    SearchView = Backbone.View.extend({
+        tagName: 'input',
+
+        xhr: null,
+
+        events: {
+            "keyup": "search"
+        },
+
+        initialize: function () {
+            $(this.el).attr({
+                type: 'text',
+                placeholder: "Search translation"
+            });
+        },
+
+        search: function () {
+            var self = this;
+
+            if ($(this.el).val().length < 3) {
+                return;
+            }
+
+            if (this.xhr !== null) {
+                this.xhr.abort();
+                this.xhr = null;
+            }
+
+            this.xhr = $.ajax({
+                url: '/translate.me/admin/search',
+                type: 'post',
+
+                data: {
+                    locale: $(App.language.el).find(":selected").attr("value"),
+                    q: $(this.el).val()
+                },
+
+                success: function (results) {
+                    $("tbody", App.table.el).children().remove();
+                    App.table.collection.set(results);
+                    App.table.render();
+
+                    self.xhr = null;
+                },
+                error: function () {
+                    self.xhr = null;
+                }
+            });
+        }
+    });
 
     TranslationCollection = Backbone.Collection.extend({
         url: "/translate.me/api/json/translations",
@@ -197,6 +248,11 @@ $(function () {
         initialize: function () {
             var self = this;
 
+            var $addLanguage = $("<option></option>");
+            $addLanguage.html('Add new language');
+            $addLanguage.attr("value", 'addLanguage');
+            this.$el.append($addLanguage);
+
             this.collection.fetch({
                 success: function () {
                     self.collection.each(function (model) {
@@ -219,6 +275,10 @@ $(function () {
         },
 
         handleLanguageChanged: function(event) {
+            if ($(event.target).find(":selected").attr("value") === "addLanguage") {
+                return;
+            }
+
             this.fireLanguageChanged($(event.target).find(":selected").attr("value"));
         },
 
@@ -278,6 +338,8 @@ $(function () {
 
         initialize: function () {
             var self = this;
+
+            this.search = new SearchView();
             this.table = new TableView();
 
             this.viewConfig = new Backbone.Model();
@@ -307,10 +369,12 @@ $(function () {
         },
 
         render: function () {
+            $("#search").append(this.search.render().el);
             $("#namespaceSelector").append(this.select.render().el);
             $("#languageSelector").append(this.language.render().el);
             $("#addLanguage").append(this.addLanguage.render().el);
             $("#table").append(this.table.render().el);
+
             return this;
         }
     });
