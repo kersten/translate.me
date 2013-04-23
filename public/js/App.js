@@ -28,6 +28,7 @@ $(function () {
             var self = this;
 
             if ($(this.el).val().length < 3) {
+                $("tbody", App.table.el).children().remove();
                 return;
             }
 
@@ -179,6 +180,8 @@ $(function () {
 
             this.collection.fetch({
                 success: function () {
+                    self.$el.append('<option value=>All translations</option>');
+
                     self.collection.each(function (model) {
                         var namespace = model.get("namespace"),
                             $option = $("<option></option>");
