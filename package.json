@@ -1,49 +1,50 @@
 {
-    "name"   : "translate.me",
-    "version": "0.3.4",
-
-    "author"     : "Kersten Burkhardt <kerstenk@gmail.com>",
-    "description": "UI for managing i18n strings and publish them for the frontend.",
-
-    "contributors": [
-        {
-            "name" : "Kersten Burkhardt",
-            "email": "kerstenk@gmail.com"
-        },
-        {
-            "name" : "Pierre Schubert",
-            "email": "366256@gmail.com"
-        }
-    ],
-
-    "repository": {
-        "type" : "git",
-        "url": "https://github.com/kersten/translate.me.git"
+  "name": "translate.me",
+  "version": "0.3.4",
+  "author": "Kersten Burkhardt <kerstenk@gmail.com>",
+  "description": "UI for managing i18n strings and publish them for the frontend.",
+  "contributors": [
+    {
+      "name": "Kersten Burkhardt",
+      "email": "kerstenk@gmail.com"
     },
-
-    "homepage": "https://github.com/kersten/translate.me",
-    "keywords": ["translations", "translate", "i18n", "gettext", "multi language", "language"],
-
-    "dependencies": {
-        "async"     : "0.2.6",
-        "handlebars": "1.0.8",
-        "mongoose"  : "3.6.4",
-        "dive"      : "0.3.0",
-        "underscore": "1.4.4",
-        "esprima"   : "1.0.2",
-        "traverse"  : "0.6.3",
-        "express"   : "3.x",
-        "locale"    : "0.0.8",
-        "mime"      : "1.2.9"
-    },
-
-    "devDependencies": {
-        "chai"         : "*",
-        "mocha"        : "*"
-    },
-
-    "engines": {
-        "node": ">=0.8.x",
-        "npm" : "1.x"
+    {
+      "name": "Pierre Schubert",
+      "email": "366256@gmail.com"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kersten/translate.me.git"
+  },
+  "homepage": "https://github.com/kersten/translate.me",
+  "keywords": [
+    "translations",
+    "translate",
+    "i18n",
+    "gettext",
+    "multi language",
+    "language"
+  ],
+  "dependencies": {
+    "async": "0.2.6",
+    "handlebars": "1.0.8",
+    "mongoose": "3.6.4",
+    "dive": "0.3.0",
+    "underscore": "1.4.4",
+    "esprima": "1.0.2",
+    "traverse": "0.6.3",
+    "express": "3.x",
+    "locale": "0.0.8",
+    "mime": "1.2.9",
+    "optimist": "~0.4.0"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  },
+  "engines": {
+    "node": ">=0.8.x",
+    "npm": "1.x"
+  }
 }
