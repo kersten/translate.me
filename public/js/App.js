@@ -94,7 +94,7 @@ $(function () {
         },
 
         initialize: function () {
-            $(this.el).append($("<td></td>").css({"vertical-align": "middle"}).html(this.model.get("key")));
+            $(this.el).append($("<td></td>").css({"vertical-align": "middle"}).text(this.model.get("key")));
             $(this.el).append($("<td></td>").html($("<input>").attr({
                 id         : this.model.get("id"),
                 placeholder: "Missing",
@@ -200,13 +200,13 @@ $(function () {
 
             this.collection.fetch({
                 success: function () {
-                    //self.$el.append($('<option value="*">All translations</option>'));
+                    self.$el.append($('<option value=>All namespaces</option>'));
 
                     self.collection.each(function (model) {
                         var namespace = model.get("namespace"),
                             $option = $("<option></option>");
                         $option.attr("value", namespace);
-                        $option.html(namespace.length > 0 ? namespace : "Global");
+                        $option.html(namespace);
                         self.$el.append($option);
                     });
 
