@@ -90,16 +90,16 @@ $(function () {
         tagName: "tr",
 
         events: {
-            "change input": "update"
+            "change textarea": "update"
         },
 
         initialize: function () {
-            $(this.el).append($("<td></td>").css({"vertical-align": "middle"}).text(this.model.get("key")));
-            $(this.el).append($("<td></td>").html($("<input>").attr({
+            $(this.el).append($("<td></td>").css({"vertical-align": "top"}).text(this.model.get("key")));
+            $(this.el).append($("<td></td>").html($("<textarea>").attr({
                 id         : this.model.get("id"),
                 placeholder: "Missing",
-                type       : "text"
-            }).css({"width": "96%", "margin": "0"}).val(this.model.get("value"))));
+                rows       : "3"
+            }).css({"width": "96%", "margin": "0"}).text(this.model.get("value"))));
         },
 
         update: function (e) {
