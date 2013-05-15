@@ -45,7 +45,7 @@ $(function () {
             }
 
             this.xhr = $.ajax({
-                url : '/translate.me/admin/search',
+                url : '/translate.me/api/json/search',
                 type: 'post',
 
                 data: {
