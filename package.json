@@ -37,7 +37,8 @@
     "express": "3.x",
     "locale": "0.0.9",
     "mime": "1.2.9",
-    "optimist": "~0.4.0"
+    "optimist": "~0.4.0",
+    "mongodb": "1.3.5"
   },
   "devDependencies": {
     "chai": "*",
