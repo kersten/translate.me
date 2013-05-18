@@ -47,4 +47,10 @@ describe("JavascriptParser", function() {
             namespace: "options-namespace"
         }]);
     });
+    it("should return a translation, when the translate statement is used in a key reference of an object", function() {
+        assert.deepEqual(parseJavascript('object[Translator.translate("key", "namespace")] = "hans";'), [{
+            key: "key",
+            namespace: "namespace"
+        }]);
+    });
 });
