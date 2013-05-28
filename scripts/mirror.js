@@ -103,7 +103,22 @@ async.waterfall([
             if(!err) {
                 util.print(util.format(' [Copied %d translations]\n', result.length));
             }
-            done(err, result);
+            done(err, newCollection);
+        });
+    },
+    function(newCollection, done) {
+        util.print('Creating index...');
+        newCollection.createIndex({
+            key: 1,
+            namespace: 1
+        }, {
+            unique: true,
+            dropDups: true
+        }, function(err, indexName) {
+            if(!err) {
+                util.print(util.format(' [Created index "%s"]\n', indexName));
+            }
+            done(err);
         });
     }
 ], function(err) {
