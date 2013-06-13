@@ -22,41 +22,26 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <script src="admin/js/jquery-1.9.1.js"></script>
-    <script src="admin/js/purl.js"></script>
-    <script src="admin/js/jquery.color-2.1.1.js"></script>
-    <script src="admin/js/bootstrap.min.js"></script>
-    <script src="admin/js/bootstrap-combobox.js"></script>
-    <script src="admin/js/underscore-min.js"></script>
-    <script src="admin/js/backbone-min.js"></script>
-
-    <script src="admin/js/countries.iso.js"></script>
-    <script src="admin/js/App.js"></script>
 </head>
 <body>
-<div class="navbar navbar-fixed-top navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="brand" href="#">translate.me</a>
-            <form class="navbar-form form-inline">
-                <!-- <div id="addLanguage" class="pull-right" style="margin-left: 5px;"></div> -->
-
-                <div id="namespaceSelector" class="pull-right" style="margin-left: 5px;"></div>
-
-                <div id="languageSelector" class="pull-right" style="margin-left: 5px;"></div>
-
-                <div id="search" class="pull-right"></div>
-            </form>
+    <div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#">translate.me</a>
+                <div id="search" class="form-search navbar-search pull-right"></div>
+                <div id="localeSelector" class="navbar-form pull-right"></div>
+                <div id="namespaceSelector" class="navbar-form pull-right"></div>
+                <div id="onlyEmptyToogle" class="navbar-form pull-right" style="padding: 5px 5px; color: white"></div>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="container" id="content">
-    <div class="row">
-        <div class="span12" id="table"></div>
+    <div class="container" id="content">
+        <div class="row">
+            <div class="span12" id="table"></div>
+        </div>
     </div>
-</div>
+<script data-main="admin/js/Index" src="/components/requirejs/require.js"></script>
 </body>
 </html>

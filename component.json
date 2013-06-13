@@ -1,0 +1,13 @@
+{
+  "name": "requirejs-i18n-mongodb",
+  "version": "1.0.0",
+  "dependencies": {
+    "requirejs": "~2.1.6",
+    "bootstrap": "~2.3.2",
+    "jquery": "~2.0.2",
+    "jquery-color": "~2.1.2",
+    "underscore": "~1.4.4",
+    "backbone": "~1.0.0",
+    "purl": "git://github.com/allmarkedup/purl.git#2.3.1"
+  }
+}
