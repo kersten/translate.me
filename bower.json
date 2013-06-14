@@ -9,6 +9,7 @@
     "underscore": "~1.4.4",
     "backbone": "~1.0.0",
     "purl": "git://github.com/allmarkedup/purl.git#2.3.1",
-    "font-awesome": "~3.2.0"
+    "font-awesome": "~3.2.0",
+    "requirejs-tpl": "latest"
   }
 }
