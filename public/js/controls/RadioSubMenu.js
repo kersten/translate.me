@@ -1,21 +1,10 @@
-define(['underscore', 'backbone'], function(_, Backbone) {
+define(['underscore', 'backbone', 'tpl!./RadioSubMenu.tpl'], function(_, Backbone, template) {
     'use strict';
 
     return Backbone.View.extend({
         tagName: 'li',
         className: 'dropdown-submenu',
-        template: _.template(
-            '<a style="cursor: default"><i class="icon <%= icon %>"></i><%= label %></a>' +
-            '<% if(items.length > 0) { %>' +
-            '<ul class="dropdown-menu">' +
-            '<% _.each(items, function(item) { %>' +
-            '<li data-value="<%= item.value %>"><a href="#">' +
-            '<i class="icon <% if(selectedItem && selectedItem.get("value") === item.value) { %>icon-check<% } else { %>icon-check-empty<% } %>"></i><%= item.label %></a>' +
-            '</li>' +
-            '<% }); %>' +
-            '</ul>' +
-            '<% } %>'
-        ),
+        template: template,
         events: {
             "click ul.dropdown-menu li": "handleClick"
         },

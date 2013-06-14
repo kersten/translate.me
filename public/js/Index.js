@@ -6,7 +6,8 @@ require.config({
         "purl": "../components/purl/purl",
         "backbone": "../components/backbone/backbone-min",
         "bootstrap": "../components/bootstrap/docs/assets/js/bootstrap.min",
-        "bootstrap-dropdown": "../components/bootstrap/js/bootstrap-dropdown"
+        "bootstrap-dropdown": "../components/bootstrap/js/bootstrap-dropdown",
+        "tpl": "../components/requirejs-tpl/tpl"
     },
 
     shim: {

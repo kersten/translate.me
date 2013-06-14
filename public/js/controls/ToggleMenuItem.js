@@ -1,10 +1,8 @@
-define(['underscore', 'backbone'], function(_, Backbone) {
+define(['underscore', 'backbone', 'tpl!./ToggleMenuItem.tpl'], function(_, Backbone, template) {
     return Backbone.View.extend({
         tagName: 'li',
         className: 'menu-item',
-        template: _.template(
-            '<a href="#"><i class="icon"></i><span><%= text %></span></a>'
-        ),
+        template: template,
 
         initialize: function () {
             this.toggled = false;
