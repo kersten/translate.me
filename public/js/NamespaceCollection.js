@@ -8,7 +8,8 @@ define(['underscore', 'backbone'], function(_, Backbone) {
             var result = [];
             _.each(response, function (namespace) {
                 result.push({
-                    namespace: namespace
+                    label: namespace,
+                    value: namespace
                 });
             });
             return result;

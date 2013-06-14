@@ -1,4 +1,4 @@
-define(['underscore', 'backbone'], function(_, Backbone) {
+define(['underscore', 'backbone', './data/locales'], function(_, Backbone, locales) {
     'use strict';
 
     return Backbone.Collection.extend({
@@ -8,7 +8,8 @@ define(['underscore', 'backbone'], function(_, Backbone) {
             var result = [];
             _.each(response, function (localeCode) {
                 result.push({
-                    code: localeCode
+                    label: locales[localeCode].name,
+                    value: localeCode
                 });
             });
             return result;

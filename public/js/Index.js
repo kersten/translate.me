@@ -6,7 +6,7 @@ require.config({
         "purl": "../components/purl/purl",
         "backbone": "../components/backbone/backbone-min",
         "bootstrap": "../components/bootstrap/docs/assets/js/bootstrap.min",
-        "bootstrap-combobox": "../components/bootstrap-combobox/js/bootstrap-combobox"
+        "bootstrap-dropdown": "../components/bootstrap/js/bootstrap-dropdown"
     },
 
     shim: {
@@ -29,7 +29,7 @@ require.config({
         "bootstrap": {
             deps: ["jquery"]
         },
-        "bootstrap-combobox": {
+        "bootstrap-dropdown": {
             deps: ["bootstrap"]
         }
     }

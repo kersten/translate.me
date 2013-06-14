@@ -1,0 +1,15 @@
+body {
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+.navbar select {
+    width: auto;
+    border: none;
+    margin: 5px 5px 0px;
+}
+
+/* Put some space behind the icons of the dropdown-menu */
+.navbar .dropdown .dropdown-menu li i.icon {
+    width: 1.8em;
+    display: inline-block;
+}

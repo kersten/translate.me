@@ -1,5 +1,7 @@
-define(['underscore', 'backbone', './TranslationSearchView', './TranslationTableView', './NamespaceSelectorView', './LocaleSelectorView', './ToggleView'],
-    function(_, Backbone, TranslationSearchView, TranslationTableView, NamespaceSelectorView, LocaleSelectorView, ToggleView) {
+define(['underscore', 'backbone', './TranslationSearchView', './TranslationTableView', './NamespaceCollection',
+    './LocaleCollection', './controls/ToggleMenuItem', './controls/RadioSubMenu', 'bootstrap-dropdown', 'purl'],
+    function(_, Backbone, TranslationSearchView, TranslationTableView, NamespaceCollection,
+             LocaleCollection, ToggleMenuItem, RadioSubMenu) {
     'use strict';
 
     return Backbone.View.extend({
@@ -7,37 +9,9 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
             var self = this,
                 searchInput = this.searchInput = new TranslationSearchView(),
                 table = this.table = new TranslationTableView(),
-                namespaceSelector = this.namespaceSelector = new NamespaceSelectorView(),
-                localeSelector = this.localeSelector = new LocaleSelectorView(),
-                onlyEmptyToggle = this.onlyEmptyToggle = new ToggleView({
+                onlyEmptyToggle = this.onlyEmptyToggle = new ToggleMenuItem({
                     text: 'Only Empty'
                 }),
-                updateURL = function () {
-                    var hash = "";
-
-                    if(searchInput.getQuery()) {
-                        hash = hash + "q=" + encodeURIComponent(searchInput.getQuery());
-                    }
-                    if(localeSelector.getLocale()) {
-                        if(hash.length > 0) {
-                            hash += '&';
-                        }
-                        hash = hash + "locale=" + encodeURIComponent(localeSelector.getLocale());
-                    }
-                    if(namespaceSelector.getNamespace()) {
-                        if(hash.length > 0) {
-                            hash += '&';
-                        }
-                        hash = hash + "namespace=" + encodeURIComponent(namespaceSelector.getNamespace());
-                    }
-                    if(onlyEmptyToggle.getToggle()) {
-                        if(hash.length > 0) {
-                            hash += '&';
-                        }
-                        hash = hash + "onlyEmpty=" + onlyEmptyToggle.getToggle();
-                    }
-                    window.location.hash = hash;
-                },
                 searchParam = $.url().fparam('q'),
                 onlyEmptyParam = $.url().fparam('onlyEmpty');
 
@@ -50,72 +24,98 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
 
             this.listenTo(searchInput, "query:changed", _.debounce(function () {
                 self.search();
-                updateURL();
             }, 100));
-            this.listenTo(namespaceSelector, "namespace:changed", function () {
-                self.search();
-                updateURL();
-            });
-            this.listenTo(localeSelector, "locale:changed", function () {
-                self.search();
-                updateURL();
-            });
+
             this.listenTo(onlyEmptyToggle, "toggle:changed", function() {
                 self.search();
-                updateURL();
             });
 
-            this.listenTo(namespaceSelector, "namespaces:loaded", function (namespaceCollection) {
-                var namespace;
 
-                if (!namespaceCollection.isEmpty()) {
-                    namespace = $.url().fparam('namespace')
-                    if (namespace) {
-                        namespaceSelector.setNamespace(decodeURIComponent(namespace));
+
+            var namespaceSelector = this.namespaceSelector = new RadioSubMenu({
+                    collection: new NamespaceCollection(null, {
+                        comparator: function (model) {
+                            return model.get("value").toLowerCase();
+                        }
+                    }),
+                    label: 'Namespaces',
+                    icon: 'icon-folder-open',
+                    allowNone: true
+                });
+
+            namespaceSelector.collection.fetch({
+                success: function(namespaces) {
+                    var param = $.url().fparam('namespace');
+
+                    if(param) {
+                        param = decodeURIComponent(param);
+                        namespaceSelector.selectItem(namespaces.findWhere({value: param}));
+                    }
+
+                    if(namespaces.size() > 0 && localeSelector.collection.size() > 0) {
+                        self.search();
                     }
                 }
-
-                if(namespaceSelector.isReady() && localeSelector.isReady()) {
-                    self.search();
-                }
             });
-            this.listenTo(localeSelector, "locales:loaded", function (localesCollection) {
-                var locale;
+            this.listenTo(namespaceSelector, "selection:changed", function () {
+                self.search();
+            });
 
-                if (!localesCollection.isEmpty()) {
-                    locale = $.url().fparam('locale');
-                    if (locale) {
-                        localeSelector.setLocale(decodeURIComponent(locale));
+
+
+            var localeSelector = this.localeSelector = new RadioSubMenu({
+                    collection: new LocaleCollection(null, {
+                        comparator: function (model) {
+                            return model.get("label").toLowerCase();
+                        }
+                    }),
+                    label: 'Locale',
+                    icon: 'icon-globe'
+                });
+
+            localeSelector.collection.fetch({
+                success: function(locales) {
+                    var param = $.url().fparam('locale');
+
+                    if(param) {
+                        param = decodeURIComponent(param);
                     } else {
-                        locale = localesCollection.first().get('code');
-                        localeSelector.setLocale(locale);
-                        updateURL();
+                        param = 'de';
+                    }
+
+                    localeSelector.selectItem(locales.findWhere({value: param}));
+
+                    if(namespaceSelector.collection.size() > 0 && locales.size() > 0) {
+                        self.search();
                     }
                 }
-
-                if(namespaceSelector.isReady() && localeSelector.isReady()) {
-                    self.search();
-                }
+            });
+            this.listenTo(localeSelector, 'selection:changed', function() {
+                self.search();
             });
         },
 
         render: function () {
             $("#search").append(this.searchInput.render().el);
-            $("#namespaceSelector").append(this.namespaceSelector.render().el);
-            $("#localeSelector").append(this.localeSelector.render().el);
             $("#table").append(this.table.render().el);
-            $("#onlyEmptyToogle").append(this.onlyEmptyToggle.render().el);
+
+            $(".navbar .nav .dropdown-toggle").dropdown();
+            var $dropdownMenu = $("#translation-filter-menu>.dropdown-menu");
+            $dropdownMenu.append(this.onlyEmptyToggle.render().el);
+            $dropdownMenu.append(this.localeSelector.render().el);
+            $dropdownMenu.append(this.namespaceSelector.render().el);
             return this;
         },
 
         search: function() {
             var self = this;
 
+            this._updateHash();
             this.table.collection.fetch({
                 data: {
-                    namespace: self.namespaceSelector.getNamespace(),
-                    locale: self.localeSelector.getLocale(),
+                    namespace: self.namespaceSelector.getSelectedItem().get("value"),
                     search: self.searchInput.getQuery(),
+                    locale: self.localeSelector.getSelectedItem().get("value"),
                     onlyEmpty: self.onlyEmptyToggle.getToggle(),
                     emulateMissingTranslations: true
                 },
@@ -123,6 +123,35 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                     self.table.render();
                 }
             });
+        },
+
+        _updateHash: function() {
+            var hash = "",
+                addParam = function(hash, name, value) {
+                    if(hash.length > 0) {
+                        hash += '&';
+                    }
+                    return hash + name + "=" + encodeURIComponent(value);
+                },
+                query = this.searchInput.getQuery(),
+                locale = this.localeSelector.getSelectedItem().get('value'),
+                namespace = this.namespaceSelector.getSelectedItem().get('value'),
+                onlyEmpty = this.onlyEmptyToggle.getToggle();
+
+            if(query) {
+                hash = addParam(hash, 'q', query);
+            }
+            if(locale) {
+                hash = addParam(hash, 'locale', locale);
+            }
+            if(namespace) {
+                hash = addParam(hash, 'namespace', namespace);
+            }
+            if(onlyEmpty) {
+                hash = addParam(hash, 'onlyEmpty', onlyEmpty);
+            }
+
+            window.location.hash = hash;
         }
     });
 });
