@@ -8,8 +8,8 @@ define(['underscore', 'backbone', './data/locales'], function(_, Backbone, local
             var result = [];
             _.each(response, function (localeCode) {
                 result.push({
-                    label: locales[localeCode].name,
-                    value: localeCode
+                    name: locales[localeCode].name,
+                    code: localeCode
                 });
             });
             return result;

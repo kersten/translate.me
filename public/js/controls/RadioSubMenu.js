@@ -13,44 +13,79 @@ define(['underscore', 'backbone', 'tpl!./RadioSubMenu.tpl'], function(_, Backbon
             var self = this;
 
             this.selectedItem = new Backbone.Model();
-            if(this.collection) {
-                this.listenTo(this.collection, 'add remove', _.debounce(function() {
-                    self.render();
-                }, 50));
-            } else {
+            if(!this.collection) {
                 this.collection = new Backbone.Collection();
             }
+            this.listenTo(this.collection, 'add remove', _.debounce(function() {
+                self.render();
+            }, 50));
         },
 
         render: function() {
+            var self = this,
+                createItems = function(coll) {
+                    var items = [];
+
+                    coll.each(function(model) {
+                        items.push({
+                            value: model.get(self.options.fields.value),
+                            label: model.get(self.options.fields.label)
+                        });
+                    });
+
+                    return items;
+                };
+
             this.$el.children().remove();
             this.$el.append(this.template({
                 label: this.options.label,
                 icon: this.options.icon,
-                selectedItem: this.selectedItem,
-                items: this.collection.toJSON()
+                selectedValue: this.getSelectedValue(),
+                items: createItems(this.collection)
             }));
             return this;
         },
 
         handleClick: function(event) {
-            var $li = $(event.currentTarget),
+            var self = this,
+                $li = $(event.currentTarget),
                 value = $li.data('value'),
                 item = this.collection.find(function(item) {
-                    return item.get('value') == value;
+                    return item.get(self.options.fields.value) == value;
                 });
 
-            if(this.options.allowNone && this.selectedItem.get('value') === item.get('value')) {
+            if(this.options.allowNone && this.getSelectedValue() === item.get(this.options.fields.value)) {
                 this.selectedItem = new Backbone.Model();
             } else {
                 this.selectedItem = item;
             }
-            this.fireItemSelected(this.selectedItem);
+            this._fireItemSelected(this.selectedItem);
             this.render();
             return false;
         },
 
-        selectItem: function(item) {
+        getSelectedValue: function() {
+            var value = null;
+
+            if(this._getSelectedItem()) {
+                value = this._getSelectedItem().get(this.options.fields.value);
+            }
+            return value;
+        },
+
+        selectValue: function(value) {
+            if(!value) {
+                throw new Error("The passed value is undefined or null");
+            }
+            var query = {}, item;
+
+            query[this.options.fields.value] = value;
+            item = this.collection.findWhere(query);
+
+            this._selectItem(item);
+        },
+
+        _selectItem: function(item) {
             if(item === undefined) {
                 throw new Error('The passed argument item is undefined.');
             } else if(item === null) {
@@ -60,11 +95,11 @@ define(['underscore', 'backbone', 'tpl!./RadioSubMenu.tpl'], function(_, Backbon
             this.render();
         },
 
-        getSelectedItem: function() {
+        _getSelectedItem: function() {
             return this.selectedItem;
         },
 
-        fireItemSelected: function(item) {
+        _fireItemSelected: function(item) {
             this.trigger('selection:changed', item);
         }
     });

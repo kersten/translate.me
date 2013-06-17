@@ -6,7 +6,7 @@
         <% _.each(items, function(item) { %>
             <li data-value="<%= item.value %>">
                 <a href="#">
-                    <i class="icon <% if(selectedItem && selectedItem.get("value") === item.value) { %>icon-check<% } else { %>icon-check-empty<% } %>"></i><%= item.label %></a>
+                    <i class="icon <% if(selectedValue && selectedValue === item.value) { %>icon-check<% } else { %>icon-check-empty<% } %>"></i><%= item.label %></a>
             </li>
         <% }); %>
     </ul>

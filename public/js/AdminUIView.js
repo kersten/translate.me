@@ -46,19 +46,23 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
             this.namespaceSelector = new RadioSubMenu({
                 collection: new NamespaceCollection(null, {
                     comparator: function (model) {
-                        return model.get("value").toLowerCase();
+                        return model.get("name").toLowerCase();
                     }
                 }),
                 label: 'Namespaces',
                 icon: 'icon-folder-open',
-                allowNone: true
+                allowNone: true,
+                fields: {
+                    label: 'name',
+                    value: 'name'
+                }
             });
             var updateNamespace = this.hashParameterHandler.addParameterHandler('namespace', {
                 get: function() {
-                    return self.namespaceSelector.getSelectedItem().get("value");
+                    return self.namespaceSelector.getSelectedValue();
                 },
                 set: function(str) {
-                    self.namespaceSelector.selectItem(self.namespaceSelector.collection.findWhere({value: str}));
+                    self.namespaceSelector.selectValue(str);
                 }
             });
             this.listenTo(this.namespaceSelector, "selection:changed", function () {
@@ -77,18 +81,22 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
             this.localeSelector = new RadioSubMenu({
                 collection: new LocaleCollection(null, {
                     comparator: function (model) {
-                        return model.get("label").toLowerCase();
+                        return model.get("name").toLowerCase();
                     }
                 }),
                 label: 'Locale',
-                icon: 'icon-globe'
+                icon: 'icon-globe',
+                fields: {
+                    value: 'code',
+                    label: 'name'
+                }
             });
             var updateLocale = this.hashParameterHandler.addParameterHandler('locale', {
                 get: function() {
-                    return self.localeSelector.getSelectedItem().get("value");
+                    return self.localeSelector.getSelectedValue();
                 },
                 set: function(str) {
-                    self.localeSelector.selectItem(self.localeSelector.collection.findWhere({value: str}));
+                    self.localeSelector.selectValue(str);
                 }
             });
             this.listenTo(this.localeSelector, 'selection:changed', function() {
@@ -122,9 +130,9 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
             this.hashParameterHandler.updateHash();
             this.table.collection.fetch({
                 data: {
-                    namespace: self.namespaceSelector.getSelectedItem().get("value"),
+                    namespace: self.namespaceSelector.getSelectedValue(),
                     search: self.searchInput.getQuery(),
-                    locale: self.localeSelector.getSelectedItem().get("value"),
+                    locale: self.localeSelector.getSelectedValue(),
                     onlyEmpty: self.onlyEmptyToggle.getToggle(),
                     emulateMissingTranslations: true
                 },
