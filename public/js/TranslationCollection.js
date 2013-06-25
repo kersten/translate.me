@@ -3,6 +3,9 @@ define(['underscore', 'backbone'], function(_, Backbone) {
 
     return Backbone.Collection.extend({
         url: "/translate.me/api/json/translations",
+        model: Backbone.Model.extend({
+            idAttribute: '_id'
+        }),
 
         parse: function (response) {
             var res = [];
