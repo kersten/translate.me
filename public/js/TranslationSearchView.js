@@ -1,14 +1,11 @@
-define(['underscore', 'backbone'], function(_, Backbone) {
+define(['underscore', 'backbone', 'tpl!./TranslationSearchView.tpl'], function(_, Backbone, template) {
     'use strict';
 
     return Backbone.View.extend({
         tagName: 'div',
         className: 'input-append',
 
-        template: _.template(
-            '<input type="text" class="search-query" placeholder="Search for keys and translations" />' +
-            '<button class="btn"><i class="icon-remove"></i></button>'
-        ),
+        template: template,
 
         events: {
             "keyup input": "handleKeyPress",

@@ -1,19 +1,11 @@
-define(['underscore', 'backbone', './TranslationRowView', './TranslationCollection'],
-    function(_, Backbone, TranslationRowView, TranslationCollection) {
+define(['underscore', 'backbone', './TranslationRowView', './TranslationCollection', 'tpl!./TranslationTableView.tpl'],
+    function(_, Backbone, TranslationRowView, TranslationCollection, template) {
     'use strict';
 
     return Backbone.View.extend({
         tagName: "table",
         className: "table table-hover",
-        template: _.template('' +
-            '<thead>' +
-            '<tr>' +
-            '<th style="width: 50%">Key</th>' +
-            '<th style="width: 50%">Translation</th>' +
-            '</thead>' +
-            '</tr>' +
-            '<tbody>' +
-            '</tbody>'),
+        template: template,
 
         collection: new TranslationCollection(null, {
             comparator: function (model) {

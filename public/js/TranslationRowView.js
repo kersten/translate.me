@@ -1,20 +1,9 @@
-define(['underscore', 'backbone', 'jquery.color'], function(_, Backbone) {
+define(['underscore', 'backbone', 'tpl!./TranslationRowView.tpl', 'jquery.color'], function(_, Backbone, template) {
     'use strict';
 
     return Backbone.View.extend({
         tagName: "tr",
-        template: _.template('' +
-            '<td style="vertical-align: top">' +
-            '<%= key %>' +
-            '</br><small class="muted">_id: <%= _id %></small>' +
-            '</br><small class="muted">created: <%= created %></small>' +
-            '</td>' +
-            '<td>' +
-            '<textarea placeholder="Missing" rows="3" ' +
-            'style="width: 96%; margin:0;">' +
-            '<%= value %>' +
-            '</textarea>' +
-            '</td>'),
+        template: template,
 
         events: {
             "change textarea": "update"
