@@ -100,7 +100,7 @@ define(['underscore', 'backbone', 'tpl!./RadioSubMenu.tpl'], function(_, Backbon
         },
 
         _fireItemSelected: function(item) {
-            this.trigger('selection:changed', item);
+            this.trigger('selection:changed', item.get(this.options.fields.value));
         }
     });
 });
