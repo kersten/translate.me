@@ -14,33 +14,42 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
 
             // Create search item
             this.searchInput = new TranslationSearchView();
-            this.listenTo(this.searchInput, "query:changed", _.debounce(function () {
-                self.search();
-            }, 100));
-            this.hashParameterHandler.addParameterHandler('q', {
+            var searchParameterHandler = this.hashParameterHandler.addParameterHandler('q', {
                 get: function() {
                     return self.searchInput.getQuery();
                 },
                 set: function(str) {
                     self.searchInput.setQuery(str);
                 }
-            })();
+            });
+            searchParameterHandler.updateParameter();
+            this.listenTo(this.searchInput, "query:changed", _.debounce(function () {
+                searchParameterHandler.updateHash();
+                self.search();
+            }, 100));
+
 
             // Create only empty menu item
-            this.onlyEmptyToggle = new ToggleMenuItem({
-                text: 'Only Empty'
+            this.hideTranslatedToggle = new ToggleMenuItem({
+                text: 'Hide Translated'
             });
-            this.listenTo(this.onlyEmptyToggle, "toggle:changed", function() {
-                self.search();
-            });
-            this.hashParameterHandler.addParameterHandler('onlyEmpty', {
+            var hideTranslatedParameterHandler = this.hashParameterHandler.addParameterHandler('hideTranslated', {
                 get: function() {
-                    return self.onlyEmptyToggle.getToggle();
+                    return self.hideTranslatedToggle.getToggle();
                 },
                 set: function(str) {
-                    self.onlyEmptyToggle.setToggle(str == 'true');
+                    self.hideTranslatedToggle.setToggle(str == 'true');
                 }
-            })();
+            });
+            hideTranslatedParameterHandler.updateParameter();
+            this.listenTo(this.hideTranslatedToggle, "toggle:changed", function(enabled) {
+                hideTranslatedParameterHandler.updateHash();
+                if(enabled) {
+                    self.table.hideTranslated();
+                } else {
+                    self.table.showTranslated();
+                }
+            });
 
             // Create namespace sub-menu
             this.namespaceSelector = new RadioSubMenu({
@@ -57,7 +66,7 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                     value: 'name'
                 }
             });
-            var updateNamespace = this.hashParameterHandler.addParameterHandler('namespace', {
+            var namespaceParameterHandler = this.hashParameterHandler.addParameterHandler('namespace', {
                 get: function() {
                     return self.namespaceSelector.getSelectedValue();
                 },
@@ -66,14 +75,13 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                 }
             });
             this.listenTo(this.namespaceSelector, "selection:changed", function () {
+                namespaceParameterHandler.updateHash();
                 self.search();
             });
             this.namespaceSelector.collection.fetch({
-                success: function(namespaces) {
-                    updateNamespace();
-                    if(namespaces.size() > 0 && self.localeSelector.collection.size() > 0) {
-                        self.search();
-                    }
+                success: function() {
+                    namespaceParameterHandler.updateParameter();
+                    self.search();
                 }
             });
 
@@ -91,7 +99,7 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                     label: 'name'
                 }
             });
-            var updateLocale = this.hashParameterHandler.addParameterHandler('locale', {
+            var localeParameterHandler = this.hashParameterHandler.addParameterHandler('locale', {
                 get: function() {
                     return self.localeSelector.getSelectedValue();
                 },
@@ -99,15 +107,15 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                     self.localeSelector.selectValue(str);
                 }
             });
-            this.listenTo(this.localeSelector, 'selection:changed', function() {
-                self.search();
+            this.listenTo(this.localeSelector, 'selection:changed', function(locale) {
+                localeParameterHandler.updateHash();
+                self.table.setLocale(locale);
             });
             this.localeSelector.collection.fetch({
-                success: function(locales) {
-                    updateLocale('de');
-                    if(self.namespaceSelector.collection.size() > 0 && locales.size() > 0) {
-                        self.search();
-                    }
+                success: function() {
+                    localeParameterHandler.updateParameter('de');
+                    localeParameterHandler.updateHash();
+                    self.table.setLocale(self.localeSelector.getSelectedValue());
                 }
             });
         },
@@ -118,7 +126,7 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
 
             $(".navbar .nav .dropdown-toggle").dropdown();
             var $dropdownMenu = $("#translation-filter-menu>.dropdown-menu");
-            $dropdownMenu.append(this.onlyEmptyToggle.render().el);
+            $dropdownMenu.append(this.hideTranslatedToggle.render().el);
             $dropdownMenu.append(this.localeSelector.render().el);
             $dropdownMenu.append(this.namespaceSelector.render().el);
             return this;
@@ -127,13 +135,11 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
         search: function() {
             var self = this;
 
-            this.hashParameterHandler.updateHash();
             this.table.collection.fetch({
                 data: {
                     namespace: self.namespaceSelector.getSelectedValue(),
-                    search: self.searchInput.getQuery(),
-                    locale: self.localeSelector.getSelectedValue(),
-                    onlyEmpty: self.onlyEmptyToggle.getToggle(),
+                    q: self.searchInput.getQuery(),
+                    onlyEmpty: self.hideTranslatedToggle.getToggle(),
                     emulateMissingTranslations: true
                 },
                 success: function () {

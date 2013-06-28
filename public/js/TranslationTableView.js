@@ -13,6 +13,12 @@ define(['underscore', 'backbone', './TranslationRowView', './TranslationCollecti
             }
         }),
 
+        initialize: function() {
+            this.locale = null;
+            this.renderTranslated = true;
+            this.rows = [];
+        },
+
         render: function () {
             var currentNamespace = null,
                 $tbody;
@@ -21,17 +27,47 @@ define(['underscore', 'backbone', './TranslationRowView', './TranslationCollecti
             $tbody = this.$el.find('tbody');
 
             this.collection.each(function (model) {
-                var namespace = model.get('namespace');
+                var namespace, row;
 
-                if (currentNamespace === null || currentNamespace !== namespace) {
-                    $tbody.append(_.template('<tr><th colspan="2">Namespace: <%= namespace %></th></tr>', {namespace: namespace}));
-                    currentNamespace = namespace;
+                if(this.renderTranslated || !model.getValue(this.locale)) {
+                    namespace = model.get('namespace'),
+                    row = new TranslationRowView({
+                        model: model,
+                        locale: this.locale
+                    });
+
+                    if (currentNamespace === null || currentNamespace !== namespace) {
+                        $tbody.append(_.template('<tr><th colspan="2">Namespace: <%= namespace %></th></tr>', {namespace: namespace}));
+                        currentNamespace = namespace;
+                    }
+
+                    this.rows.push(row);
+                    $tbody.append(row.render().$el);
                 }
-
-                $tbody.append(new TranslationRowView({model: model}).render().$el);
             }, this);
 
             return this;
+        },
+
+        showTranslated: function() {
+            this.renderTranslated = true;
+            this.render();
+        },
+
+        hideTranslated: function() {
+            this.renderTranslated = false;
+            this.render();
+        },
+
+        setLocale: function(locale) {
+            this.locale = locale;
+            _.each(this.rows, function(row) {
+                row.setLocale(locale);
+            });
+        },
+
+        getLocale: function() {
+            return this.locale;
         }
     });
 });

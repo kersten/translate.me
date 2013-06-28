@@ -26,15 +26,20 @@ define(['underscore', 'jquery', 'purl'], function(_, $) {
      * @param {!string} key of the parameter
      * @param {!{get: function(), set: function(string)}} handler object which contains get and set function to handle
      * the parameters
-     * @returns {function([string])} function to update the parameter. You may pass a fallback value
+     * @returns {updateHash: function(), updateParameter: function([string])} Object to update the created parameter handler
      */
     HashParameterHandler.prototype.addParameterHandler = function(key, handler) {
         var self = this;
 
         this.parameter[key] = handler;
 
-        return function(fallback) {
-            self.updateParameter(key, fallback);
+        return {
+            updateHash: function() {
+                self.updateHash(key);
+            },
+            updateParameter: function(fallback) {
+                self.updateParameter(key, fallback);
+            }
         }
     };
 
@@ -72,18 +77,29 @@ define(['underscore', 'jquery', 'purl'], function(_, $) {
 
     /**
      * Updates the hash portion of the URL according to all passed parameters in the constructor.
+     *
+     * @param {string} [key] to only update a specific parameter and leave the other as they are
      */
-    HashParameterHandler.prototype.updateHash = function() {
-        var hash = "";
+    HashParameterHandler.prototype.updateHash = function(key) {
+        var hash = "",
+            params;
 
-        _.each(this.parameter, function(handler, key) {
-            var value = handler.get();
+        if(key) {
+            params = $.url().fparam();
+            params[key] = this.parameter[key].get();
+        } else {
+            params = {};
+            _.each(this.parameter, function(handler, key) {
+                params[key] = handler.get();
+            });
+        }
 
+        _.each(params, function(value, key) {
             if(value) {
                 if(hash.length > 0) {
                     hash += '&';
                 }
-                hash = hash + key + "=" + encodeURIComponent(handler.get());
+                hash = hash + key + "=" + encodeURIComponent(value);
             }
         });
 
