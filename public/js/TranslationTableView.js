@@ -26,6 +26,7 @@ define(['underscore', 'backbone', './TranslationRowView', './TranslationCollecti
             this.$el.html(this.template());
             $tbody = this.$el.find('tbody');
 
+            this.rows = [];
             this.collection.each(function (model) {
                 var namespace, row;
 
@@ -68,6 +69,10 @@ define(['underscore', 'backbone', './TranslationRowView', './TranslationCollecti
 
         getLocale: function() {
             return this.locale;
+        },
+
+        getNumberVisibleTranslation: function() {
+            return _.size(this.rows);
         }
     });
 });

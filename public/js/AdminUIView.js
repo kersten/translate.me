@@ -49,6 +49,7 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
                 } else {
                     self.table.showTranslated();
                 }
+                self.updateTranslationCount();
             });
 
             // Create namespace sub-menu
@@ -133,19 +134,33 @@ define(['underscore', 'backbone', './TranslationSearchView', './TranslationTable
         },
 
         search: function() {
-            var self = this;
+            var self = this,
+                query = self.searchInput.getQuery();
+
+            if(query) {
+                query = query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+            }
 
             this.table.collection.fetch({
                 data: {
                     namespace: self.namespaceSelector.getSelectedValue(),
-                    q: self.searchInput.getQuery(),
+                    q: query,
                     onlyEmpty: self.hideTranslatedToggle.getToggle(),
                     emulateMissingTranslations: true
                 },
                 success: function () {
                     self.table.render();
+                    self.updateTranslationCount();
                 }
             });
+        },
+
+        updateTranslationCount: function() {
+            this._updateTranslactionCount(this.table.getNumberVisibleTranslation());
+        },
+
+        _updateTranslactionCount: function(number) {
+            this.$el.find('#right-nav .translationCount>a>.value').text(number);
         }
     });
 });
