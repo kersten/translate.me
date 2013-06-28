@@ -2,7 +2,7 @@
     <i class="icon <%= icon %>"></i><%= label %>
 </a>
 <% if(items.length > 0) { %>
-    <ul class="dropdown-menu">
+    <ul class="dropdown-menu" style="max-height: 520px; overflow-y: auto">
         <% _.each(items, function(item) { %>
             <li data-value="<%= item.value %>">
                 <a href="#">
