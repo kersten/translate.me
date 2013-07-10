@@ -5,7 +5,7 @@ possible to translate you app with an easy to use frontend.
 
 ## Build Status
 
-[![build status](https://travis-ci.org/kersten/translate.me.png)](http://travis-ci.org/kersten/translate.me)
+[![Build Status](https://travis-ci.org/kersten/translate.me.png?branch=master)](https://travis-ci.org/kersten/translate.me)
 
 ## Installation
 
