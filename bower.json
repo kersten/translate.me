@@ -1,5 +1,5 @@
 {
-  "name": "requirejs-i18n-mongodb",
+  "name": "translate.me",
   "version": "1.0.0",
   "dependencies": {
     "requirejs": "~2.1.6",
