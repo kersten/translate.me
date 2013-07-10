@@ -18,8 +18,13 @@ versions.
 
 ### Setup
 
-    var TranslateMe = require('translate.me'),
-        translateMe = new TranslateMe('mongodb://localhost/i18n', 'en', ['de', 'fr', 'fi', 'cz']),
+    var TranslateMe = require('translate.me')({
+            mongoURL: 'mongodb://localhost/i18n',
+            defaultLocale: 'en',
+            supportedLocales: ['de', 'fr', 'fi', 'cz']
+        }),
+        path = require('path'),
+        Handlebars = require('handlebars'),
         express = require('express'),
         app = express();
 
@@ -30,10 +35,21 @@ versions.
      * It is imported to place the 'reqister routers' after
      * all use-statements, to prevent any blockage of other middlewares.
      */
-    translationModule.registerRoutes(app, true);
+    TranslateMe.registerMiddlewares(app);
 
     app.get('/', function (req, res) {
         res.sendfile('./example/views/index.html');
+    });
+
+    TranslateMe.generateDefaultTranslations([
+        path.join(__dirname, 'public', 'js'),
+        path.join(__dirname, 'views')
+    ], __dirname, function(err, translations) {
+        TranslateMe.getTranslator(function() {
+            TranslateMe.registerHelpers(Handlebars);
+
+            app.listen(3000);
+        });
     });
 
 ### Administration Frontend
