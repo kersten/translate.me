@@ -3,6 +3,10 @@
 This module will help you to easily implement translations into your app. With the integrated express middleware it is
 possible to translate you app with an easy to use frontend.
 
+## Build Status
+
+[![build status](https://travis-ci.org/kersten/translate.me.png)](http://travis-ci.org/kersten/translate.me)
+
 ## Installation
 
 ### translate.Me module
