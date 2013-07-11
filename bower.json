@@ -1,6 +1,6 @@
 {
   "name": "translate.me",
-  "version": "1.0.0",
+  "version": "1.0.0-2",
   "dependencies": {
     "requirejs": "~2.1.6",
     "bootstrap": "~2.3.2",
