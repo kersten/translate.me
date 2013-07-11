@@ -1,4 +1,4 @@
-define(['lib/public/ajax-translations-handler.amd.js', 'lib/handlebars-helpers.umd', 'lib/translator.umd'],
+define(['./lib/public/ajax-translations-handler.amd.js', './lib/handlebars-helpers.umd.js', './lib/translator.umd.js'],
     function(AjaxTranslationHandler, Helpers, Translator) {
     'use strict';
 
