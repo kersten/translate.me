@@ -44,7 +44,11 @@ versions.
     TranslateMe.generateDefaultTranslations([
         path.join(__dirname, 'public', 'js'),
         path.join(__dirname, 'views')
-    ], __dirname, function(err, translations) {
+    ], __dirname, {
+        'text/angular': ['html'],
+        'text/handlebars': ['hbs', 'handlebars', 'handlebar'],
+        'text/mustache': ['mustache']
+    }, function(err, translations) {
         TranslateMe.getTranslator(function() {
             TranslateMe.registerHelpers(Handlebars);
 
