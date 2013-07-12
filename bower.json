@@ -1,6 +1,6 @@
 {
-  "name": "requirejs-i18n-mongodb",
-  "version": "1.0.0",
+  "name": "translate.me",
+  "version": "1.0.0-4",
   "dependencies": {
     "requirejs": "~2.1.6",
     "bootstrap": "~2.3.2",

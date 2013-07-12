@@ -1,5 +1,6 @@
-define(['underscore', 'backbone', './TranslationRowView', './TranslationCollection', 'tpl!./TranslationTableView.tpl'],
-    function(_, Backbone, TranslationRowView, TranslationCollection, template) {
+define(['underscore', 'backbone', './TranslationRowView', './TranslationCollection', 'tpl!./TranslationTableView.tpl',
+    'tpl!./TranslationTableViewNamespaceRowHeader.tpl'],
+    function(_, Backbone, TranslationRowView, TranslationCollection, template, templateNamespaceRowHeader) {
     'use strict';
 
     return Backbone.View.extend({
@@ -38,7 +39,7 @@ define(['underscore', 'backbone', './TranslationRowView', './TranslationCollecti
                     });
 
                     if (currentNamespace === null || currentNamespace !== namespace) {
-                        $tbody.append(_.template('<tr><th colspan="2">Namespace: <%= namespace %></th></tr>', {namespace: namespace}));
+                        $tbody.append(templateNamespaceRowHeader({namespace: namespace}));
                         currentNamespace = namespace;
                     }
 

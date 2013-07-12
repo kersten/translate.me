@@ -1,0 +1,28 @@
+{
+    "baseUrl": ".",
+    "name": "translate.me",
+    "preserveLicenseComments": false,
+    "out": "translate.me.min.js",
+    "findNestedDependencies": true,
+    "paths": {
+        "jquery": "empty:",
+        "underscore": "empty:"
+    },
+    "optimize": "uglify2",
+    "uglify2": {
+        "toplevel": true,
+        "ascii_only": false,
+        "output": {
+            "beautify": false
+        },
+        "compress": {
+            "sequences": true,
+            "global_defs": {
+                "DEBUG": false
+            }
+        },
+        "warnings": false,
+        "mangle": true,
+        "screw-ie8": true
+    }
+}
